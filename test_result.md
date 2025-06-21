@@ -179,6 +179,18 @@ backend:
         - working: true
           agent: "testing"
           comment: "Stage information API endpoints are working correctly. Successfully tested POST /api/stages for creation, GET /api/stages/{stage_type} for specific stage retrieval, and GET /api/stages for retrieving all stages."
+          
+  - task: "Analytics API"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "low"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "Analytics API endpoint (/api/analytics) is working correctly. Returns accurate counts of contacts, portfolio sections, and stages from the database."
 
 frontend:
   - task: "Portfolio homepage with navigation"
