@@ -1,0 +1,296 @@
+#!/usr/bin/env python3
+import requests
+import json
+import time
+from datetime import datetime
+import sys
+import os
+
+# Get the backend URL from the frontend .env file
+def get_backend_url():
+    try:
+        with open('/app/frontend/.env', 'r') as f:
+            for line in f:
+                if line.startswith('REACT_APP_BACKEND_URL='):
+                    return line.strip().split('=')[1].strip('"\'')
+    except Exception as e:
+        print(f"Error reading .env file: {e}")
+        return None
+
+# Main API URL
+BASE_URL = get_backend_url()
+if not BASE_URL:
+    print("Error: Could not find REACT_APP_BACKEND_URL in frontend/.env")
+    sys.exit(1)
+
+API_URL = f"{BASE_URL}/api"
+print(f"Using API URL: {API_URL}")
+
+# Test results tracking
+test_results = {
+    "total": 0,
+    "passed": 0,
+    "failed": 0,
+    "errors": []
+}
+
+def run_test(test_name, test_func):
+    """Run a test and track results"""
+    test_results["total"] += 1
+    print(f"\n{'='*80}\nRunning test: {test_name}\n{'='*80}")
+    
+    try:
+        result = test_func()
+        if result:
+            test_results["passed"] += 1
+            print(f"✅ PASSED: {test_name}")
+            return True
+        else:
+            test_results["failed"] += 1
+            test_results["errors"].append(f"❌ FAILED: {test_name}")
+            print(f"❌ FAILED: {test_name}")
+            return False
+    except Exception as e:
+        test_results["failed"] += 1
+        error_msg = f"❌ ERROR in {test_name}: {str(e)}"
+        test_results["errors"].append(error_msg)
+        print(error_msg)
+        return False
+
+def test_health_check():
+    """Test the health check endpoint"""
+    response = requests.get(f"{API_URL}/health")
+    print(f"Response status: {response.status_code}")
+    print(f"Response body: {response.text}")
+    
+    if response.status_code != 200:
+        return False
+    
+    data = response.json()
+    return data.get("status") == "healthy" and "message" in data
+
+def test_contact_form_submission():
+    """Test submitting a contact form"""
+    contact_data = {
+        "name": "Test User",
+        "email": "test@example.com",
+        "subject": "API Test",
+        "message": "This is a test message from the API test suite."
+    }
+    
+    response = requests.post(f"{API_URL}/contact", json=contact_data)
+    print(f"Response status: {response.status_code}")
+    print(f"Response body: {response.text}")
+    
+    if response.status_code != 200:
+        return False
+    
+    data = response.json()
+    return "message" in data and "id" in data
+
+def test_get_contacts():
+    """Test retrieving contact submissions"""
+    response = requests.get(f"{API_URL}/contacts")
+    print(f"Response status: {response.status_code}")
+    print(f"Response body: {response.text[:200]}...")  # Show truncated response for brevity
+    
+    if response.status_code != 200:
+        return False
+    
+    data = response.json()
+    return "contacts" in data and isinstance(data["contacts"], list)
+
+def test_portfolio_content():
+    """Test creating and retrieving portfolio content"""
+    section = "test_section"
+    content_data = {
+        "section": section,
+        "title": "Test Section Title",
+        "content": "This is test content for the portfolio section.",
+        "images": ["https://example.com/image1.jpg", "https://example.com/image2.jpg"]
+    }
+    
+    # Create/update content
+    response = requests.post(f"{API_URL}/portfolio/{section}", json=content_data)
+    print(f"Create response status: {response.status_code}")
+    print(f"Create response body: {response.text}")
+    
+    if response.status_code != 200:
+        return False
+    
+    # Retrieve content
+    response = requests.get(f"{API_URL}/portfolio/{section}")
+    print(f"Get response status: {response.status_code}")
+    print(f"Get response body: {response.text}")
+    
+    if response.status_code != 200:
+        return False
+    
+    data = response.json()
+    return (data.get("section") == section and 
+            data.get("title") == content_data["title"] and
+            data.get("content") == content_data["content"])
+
+def test_stage_info():
+    """Test creating and retrieving stage information"""
+    stage_data = {
+        "stage_type": "test_stage",
+        "company": "Test Company",
+        "position": "Test Position",
+        "period": "Jan 2023 - Jun 2023",
+        "sector": "Technology",
+        "missions": ["Mission 1", "Mission 2"],
+        "skills": ["Skill 1", "Skill 2"],
+        "achievements": ["Achievement 1"],
+        "images": ["https://example.com/stage_image.jpg"]
+    }
+    
+    # Create/update stage
+    response = requests.post(f"{API_URL}/stages", json=stage_data)
+    print(f"Create response status: {response.status_code}")
+    print(f"Create response body: {response.text}")
+    
+    if response.status_code != 200:
+        return False
+    
+    # Retrieve specific stage
+    response = requests.get(f"{API_URL}/stages/{stage_data['stage_type']}")
+    print(f"Get specific stage response status: {response.status_code}")
+    print(f"Get specific stage response body: {response.text}")
+    
+    if response.status_code != 200:
+        return False
+    
+    data = response.json()
+    stage_match = (data.get("stage_type") == stage_data["stage_type"] and
+                  data.get("company") == stage_data["company"] and
+                  data.get("position") == stage_data["position"])
+    
+    # Retrieve all stages
+    response = requests.get(f"{API_URL}/stages")
+    print(f"Get all stages response status: {response.status_code}")
+    print(f"Get all stages response body: {response.text[:200]}...")  # Show truncated response
+    
+    if response.status_code != 200:
+        return False
+    
+    all_data = response.json()
+    return stage_match and "stages" in all_data and isinstance(all_data["stages"], list)
+
+def test_analytics():
+    """Test the analytics endpoint"""
+    response = requests.get(f"{API_URL}/analytics")
+    print(f"Response status: {response.status_code}")
+    print(f"Response body: {response.text}")
+    
+    if response.status_code != 200:
+        return False
+    
+    data = response.json()
+    return ("total_contacts" in data and 
+            "total_sections" in data and 
+            "total_stages" in data and
+            "last_updated" in data)
+
+def test_error_handling():
+    """Test error handling for invalid requests"""
+    # Test invalid contact form
+    invalid_contact = {
+        "name": "Test User",
+        # Missing required email field
+        "subject": "API Test",
+        "message": "This is a test message."
+    }
+    
+    response = requests.post(f"{API_URL}/contact", json=invalid_contact)
+    print(f"Invalid contact response status: {response.status_code}")
+    print(f"Invalid contact response body: {response.text}")
+    
+    # Should return a 422 Unprocessable Entity for validation error
+    validation_error = response.status_code == 422
+    
+    # Test non-existent endpoint
+    response = requests.get(f"{API_URL}/nonexistent")
+    print(f"Non-existent endpoint response status: {response.status_code}")
+    print(f"Non-existent endpoint response body: {response.text}")
+    
+    # Should return a 404 Not Found
+    not_found_error = response.status_code == 404
+    
+    return validation_error and not_found_error
+
+def test_delete_contact():
+    """Test deleting a contact submission"""
+    # First create a contact to delete
+    contact_data = {
+        "name": "Delete Test User",
+        "email": "delete_test@example.com",
+        "subject": "Delete Test",
+        "message": "This contact should be deleted."
+    }
+    
+    response = requests.post(f"{API_URL}/contact", json=contact_data)
+    if response.status_code != 200:
+        print("Failed to create contact for deletion test")
+        return False
+    
+    contact_id = response.json().get("id")
+    if not contact_id:
+        print("No contact ID returned for deletion test")
+        return False
+    
+    # Now delete the contact
+    response = requests.delete(f"{API_URL}/contact/{contact_id}")
+    print(f"Delete response status: {response.status_code}")
+    print(f"Delete response body: {response.text}")
+    
+    if response.status_code != 200:
+        return False
+    
+    # Verify it's deleted by trying to get all contacts and checking
+    response = requests.get(f"{API_URL}/contacts")
+    if response.status_code != 200:
+        return False
+    
+    contacts = response.json().get("contacts", [])
+    for contact in contacts:
+        if contact.get("_id") == contact_id:
+            print(f"Contact with ID {contact_id} still exists after deletion")
+            return False
+    
+    return True
+
+def run_all_tests():
+    """Run all API tests"""
+    print(f"\n{'='*80}\nStarting Portfolio Backend API Tests\n{'='*80}")
+    print(f"Testing API at: {API_URL}")
+    print(f"Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+    
+    # Run all tests
+    run_test("Health Check", test_health_check)
+    run_test("Contact Form Submission", test_contact_form_submission)
+    run_test("Get Contacts", test_get_contacts)
+    run_test("Portfolio Content Management", test_portfolio_content)
+    run_test("Stage Information", test_stage_info)
+    run_test("Analytics", test_analytics)
+    run_test("Error Handling", test_error_handling)
+    run_test("Delete Contact", test_delete_contact)
+    
+    # Print summary
+    print(f"\n{'='*80}\nTest Summary\n{'='*80}")
+    print(f"Total tests: {test_results['total']}")
+    print(f"Passed: {test_results['passed']}")
+    print(f"Failed: {test_results['failed']}")
+    
+    if test_results["errors"]:
+        print("\nErrors:")
+        for error in test_results["errors"]:
+            print(f"  - {error}")
+    
+    success_rate = (test_results["passed"] / test_results["total"]) * 100
+    print(f"\nSuccess rate: {success_rate:.2f}%")
+    
+    return test_results["failed"] == 0
+
+if __name__ == "__main__":
+    run_all_tests()
