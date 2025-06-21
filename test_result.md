@@ -107,63 +107,78 @@ user_problem_statement: "Créer un portfolio pour présenter des stages de fin d
 backend:
   - task: "Portfolio API with MongoDB integration"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Created FastAPI backend with MongoDB integration, contact forms, portfolio content management, and stage information endpoints. Need to test all API endpoints."
+        - working: true
+          agent: "testing"
+          comment: "Successfully tested MongoDB integration. All database operations are working correctly. Created comprehensive backend_test.py script to verify all API endpoints."
 
   - task: "Health check endpoint"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Implemented /api/health endpoint for basic service health monitoring"
+        - working: true
+          agent: "testing"
+          comment: "Health check endpoint (/api/health) is working correctly. Returns status 'healthy' with appropriate message."
 
   - task: "Contact form API"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Implemented POST /api/contact and GET /api/contacts endpoints for contact form management"
+        - working: true
+          agent: "testing"
+          comment: "Contact form API endpoints are working correctly. Successfully tested POST /api/contact for submission and GET /api/contacts for retrieval. DELETE /api/contact/{contact_id} also works as expected."
 
   - task: "Portfolio content management API"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Implemented POST/GET /api/portfolio/{section} endpoints for dynamic content management"
+        - working: true
+          agent: "testing"
+          comment: "Portfolio content management API is working correctly. Successfully tested POST and GET operations for /api/portfolio/{section} endpoints. Content is properly stored and retrieved from MongoDB."
 
   - task: "Stage information API"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Implemented POST/GET /api/stages endpoints for managing internship stage data"
+        - working: true
+          agent: "testing"
+          comment: "Stage information API endpoints are working correctly. Successfully tested POST /api/stages for creation, GET /api/stages/{stage_type} for specific stage retrieval, and GET /api/stages for retrieving all stages."
 
 frontend:
   - task: "Portfolio homepage with navigation"
