@@ -161,19 +161,144 @@ const StagePremiereAnnee = () => {
           </div>
 
           <div className="bg-gray-800 border border-gray-700 rounded-xl p-8">
-            <h2 className="text-3xl font-bold text-cyan-400 mb-6">Missions réalisées</h2>
-            <div className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <div className="w-2 h-2 bg-cyan-400 rounded-full mt-2"></div>
-                <p className="text-gray-300">Mission principale 1 - Description détaillée de ce qui a été accompli</p>
+            <h2 className="text-3xl font-bold text-cyan-400 mb-8">Missions réalisées</h2>
+            
+            {/* Mission 1 */}
+            <div className="mb-12 bg-gray-900/50 border border-gray-600 rounded-xl p-6">
+              <div className="flex items-center mb-4">
+                <div className="w-3 h-3 bg-cyan-400 rounded-full mr-3"></div>
+                <h3 className="text-2xl font-bold text-white">Mission 1 - [Titre de votre mission]</h3>
               </div>
-              <div className="flex items-start space-x-3">
-                <div className="w-2 h-2 bg-cyan-400 rounded-full mt-2"></div>
-                <p className="text-gray-300">Mission principale 2 - Explication des tâches et responsabilités</p>
+              
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <p className="text-gray-300 leading-relaxed">
+                    [Décrivez ici votre première mission principale. Expliquez le contexte, 
+                    vos responsabilités, les défis rencontrés et les résultats obtenus. 
+                    Cette section peut contenir plusieurs paragraphes pour détailler votre expérience.]
+                  </p>
+                  <div className="space-y-2">
+                    <h4 className="text-lg font-semibold text-cyan-400">Compétences développées :</h4>
+                    <div className="flex flex-wrap gap-2">
+                      <span className="px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded-full text-sm border border-cyan-500/30">Compétence 1</span>
+                      <span className="px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded-full text-sm border border-cyan-500/30">Compétence 2</span>
+                      <span className="px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded-full text-sm border border-cyan-500/30">Compétence 3</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <h4 className="text-lg font-semibold text-cyan-400">Photos de la mission :</h4>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-32 flex items-center justify-center hover:border-cyan-400 transition-colors">
+                      <span className="text-gray-400 text-sm text-center">Photo 1<br/>Mission 1</span>
+                    </div>
+                    <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-32 flex items-center justify-center hover:border-cyan-400 transition-colors">
+                      <span className="text-gray-400 text-sm text-center">Photo 2<br/>Mission 1</span>
+                    </div>
+                    <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-32 flex items-center justify-center hover:border-cyan-400 transition-colors col-span-2">
+                      <span className="text-gray-400 text-sm text-center">Photo 3<br/>Mission 1</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="flex items-start space-x-3">
-                <div className="w-2 h-2 bg-cyan-400 rounded-full mt-2"></div>
-                <p className="text-gray-300">Mission principale 3 - Résultats obtenus et impact</p>
+            </div>
+
+            {/* Mission 2 */}
+            <div className="mb-12 bg-gray-900/50 border border-gray-600 rounded-xl p-6">
+              <div className="flex items-center mb-4">
+                <div className="w-3 h-3 bg-cyan-400 rounded-full mr-3"></div>
+                <h3 className="text-2xl font-bold text-white">Mission 2 - [Titre de votre mission]</h3>
+              </div>
+              
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <p className="text-gray-300 leading-relaxed">
+                    [Décrivez ici votre deuxième mission principale. Mettez l'accent sur 
+                    l'évolution par rapport à la première mission, les nouvelles responsabilités 
+                    et les apprentissages spécifiques à cette mission.]
+                  </p>
+                  <div className="space-y-2">
+                    <h4 className="text-lg font-semibold text-cyan-400">Points clés :</h4>
+                    <ul className="space-y-1">
+                      <li className="flex items-start space-x-2">
+                        <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full mt-2"></div>
+                        <span className="text-gray-300 text-sm">Point important 1</span>
+                      </li>
+                      <li className="flex items-start space-x-2">
+                        <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full mt-2"></div>
+                        <span className="text-gray-300 text-sm">Point important 2</span>
+                      </li>
+                      <li className="flex items-start space-x-2">
+                        <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full mt-2"></div>
+                        <span className="text-gray-300 text-sm">Point important 3</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <h4 className="text-lg font-semibold text-cyan-400">Documentation visuelle :</h4>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-32 flex items-center justify-center hover:border-cyan-400 transition-colors">
+                      <span className="text-gray-400 text-sm text-center">Photo 1<br/>Mission 2</span>
+                    </div>
+                    <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-32 flex items-center justify-center hover:border-cyan-400 transition-colors">
+                      <span className="text-gray-400 text-sm text-center">Photo 2<br/>Mission 2</span>
+                    </div>
+                    <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-32 flex items-center justify-center hover:border-cyan-400 transition-colors col-span-2">
+                      <span className="text-gray-400 text-sm text-center">Photo 3<br/>Mission 2</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Mission 3 */}
+            <div className="mb-8 bg-gray-900/50 border border-gray-600 rounded-xl p-6">
+              <div className="flex items-center mb-4">
+                <div className="w-3 h-3 bg-cyan-400 rounded-full mr-3"></div>
+                <h3 className="text-2xl font-bold text-white">Mission 3 - [Titre de votre mission]</h3>
+              </div>
+              
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <p className="text-gray-300 leading-relaxed">
+                    [Présentez votre troisième mission principale. Soulignez l'impact 
+                    de cette mission sur votre développement professionnel et les résultats 
+                    concrets que vous avez obtenus.]
+                  </p>
+                  <div className="space-y-2">
+                    <h4 className="text-lg font-semibold text-cyan-400">Résultats obtenus :</h4>
+                    <div className="bg-gray-800 border border-gray-700 rounded-lg p-3">
+                      <div className="grid grid-cols-2 gap-4 text-center">
+                        <div>
+                          <div className="text-2xl font-bold text-cyan-400">XX%</div>
+                          <div className="text-gray-400 text-sm">Amélioration</div>
+                        </div>
+                        <div>
+                          <div className="text-2xl font-bold text-cyan-400">XX</div>
+                          <div className="text-gray-400 text-sm">Projets</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <h4 className="text-lg font-semibold text-cyan-400">Galerie de réalisations :</h4>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-32 flex items-center justify-center hover:border-cyan-400 transition-colors">
+                      <span className="text-gray-400 text-sm text-center">Photo 1<br/>Mission 3</span>
+                    </div>
+                    <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-32 flex items-center justify-center hover:border-cyan-400 transition-colors">
+                      <span className="text-gray-400 text-sm text-center">Photo 2<br/>Mission 3</span>
+                    </div>
+                    <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-32 flex items-center justify-center hover:border-cyan-400 transition-colors col-span-2">
+                      <span className="text-gray-400 text-sm text-center">Photo 3<br/>Mission 3</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
