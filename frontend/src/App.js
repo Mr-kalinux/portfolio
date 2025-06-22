@@ -947,14 +947,24 @@ const AdminDashboard = () => {
   const [content, setContent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [toast, setToast] = useState({ isVisible: false, message: '', type: '' });
   const { adminToken, adminLogout } = useAdmin();
 
   useEffect(() => {
     fetchAllContent();
   }, []);
 
+  const showToast = (message, type = 'success') => {
+    setToast({ isVisible: true, message, type });
+  };
+
+  const hideToast = () => {
+    setToast({ isVisible: false, message: '', type: '' });
+  };
+
   const fetchAllContent = async () => {
     try {
+      setLoading(true);
       const response = await axios.get(`${API_URL}/api/admin/content`, {
         headers: { Authorization: `Bearer ${adminToken}` }
       });
@@ -962,6 +972,7 @@ const AdminDashboard = () => {
       setLoading(false);
     } catch (error) {
       console.error('Error fetching content:', error);
+      showToast('Erreur lors du chargement du contenu', 'error');
       setLoading(false);
     }
   };
@@ -984,16 +995,18 @@ const AdminDashboard = () => {
       
       // Refresh content
       await fetchAllContent();
-      alert('Sauvegardé avec succès !');
+      showToast('✅ Sauvegardé avec succès !', 'success');
     } catch (error) {
       console.error('Error saving:', error);
-      alert('Erreur lors de la sauvegarde');
+      showToast('❌ Erreur lors de la sauvegarde', 'error');
+    } finally {
+      setSaving(false);
     }
-    setSaving(false);
   };
 
   const handleImageUpload = async (file) => {
     try {
+      showToast('📤 Upload en cours...', 'info');
       const formData = new FormData();
       formData.append('file', file);
 
@@ -1004,10 +1017,11 @@ const AdminDashboard = () => {
         }
       });
 
+      showToast('✅ Image uploadée avec succès !', 'success');
       return response.data.data; // Return base64 data
     } catch (error) {
       console.error('Error uploading image:', error);
-      alert('Erreur lors de l\'upload de l\'image');
+      showToast('❌ Erreur lors de l\'upload de l\'image', 'error');
       return null;
     }
   };
@@ -1015,13 +1029,23 @@ const AdminDashboard = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 flex items-center justify-center">
-        <div className="text-cyan-400 text-xl">Chargement du contenu...</div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-cyan-400 mx-auto mb-4"></div>
+          <div className="text-cyan-400 text-xl">Chargement du contenu...</div>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800">
+      <Toast 
+        message={toast.message} 
+        type={toast.type} 
+        isVisible={toast.isVisible} 
+        onClose={hideToast} 
+      />
+      
       {/* Header */}
       <div className="bg-gray-800 border-b border-gray-700 px-6 py-4">
         <div className="flex justify-between items-center">
@@ -1138,22 +1162,41 @@ const PersonalInfoForm = ({ data, onSave, onImageUpload, saving }) => {
     profile_image: data.profile_image || ''
   });
 
+  const [hasChanges, setHasChanges] = useState(false);
+
+  useEffect(() => {
+    setFormData({
+      name: data.name || '',
+      email: data.email || '',
+      phone: data.phone || '',
+      linkedin: data.linkedin || '',
+      description: data.description || '',
+      skills: data.skills || [],
+      profile_image: data.profile_image || ''
+    });
+    setHasChanges(false);
+  }, [data]);
+
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    setHasChanges(true);
   };
 
   const handleSkillChange = (index, value) => {
     const newSkills = [...formData.skills];
     newSkills[index] = value;
     setFormData(prev => ({ ...prev, skills: newSkills }));
+    setHasChanges(true);
   };
 
   const addSkill = () => {
     setFormData(prev => ({ ...prev, skills: [...prev.skills, ''] }));
+    setHasChanges(true);
   };
 
   const removeSkill = (index) => {
     setFormData(prev => ({ ...prev, skills: prev.skills.filter((_, i) => i !== index) }));
+    setHasChanges(true);
   };
 
   const handleImageUpload = async (e) => {
@@ -1166,9 +1209,21 @@ const PersonalInfoForm = ({ data, onSave, onImageUpload, saving }) => {
     }
   };
 
+  const handleSave = () => {
+    onSave(formData);
+    setHasChanges(false);
+  };
+
   return (
     <div className="space-y-6">
-      <h2 className="text-3xl font-bold text-white mb-6">À propos de moi</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-3xl font-bold text-white">À propos de moi</h2>
+        {hasChanges && (
+          <span className="text-orange-400 text-sm">
+            💾 Modifications non sauvegardées
+          </span>
+        )}
+      </div>
       
       <div className="bg-gray-800 border border-gray-700 rounded-xl p-6 space-y-4">
         <div className="grid md:grid-cols-2 gap-4">
@@ -1178,7 +1233,7 @@ const PersonalInfoForm = ({ data, onSave, onImageUpload, saving }) => {
               type="text"
               value={formData.name}
               onChange={(e) => handleChange('name', e.target.value)}
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400 transition-colors"
             />
           </div>
           
@@ -1188,7 +1243,7 @@ const PersonalInfoForm = ({ data, onSave, onImageUpload, saving }) => {
               type="email"
               value={formData.email}
               onChange={(e) => handleChange('email', e.target.value)}
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400 transition-colors"
             />
           </div>
           
@@ -1198,7 +1253,7 @@ const PersonalInfoForm = ({ data, onSave, onImageUpload, saving }) => {
               type="text"
               value={formData.phone}
               onChange={(e) => handleChange('phone', e.target.value)}
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400 transition-colors"
             />
           </div>
           
@@ -1208,7 +1263,7 @@ const PersonalInfoForm = ({ data, onSave, onImageUpload, saving }) => {
               type="text"
               value={formData.linkedin}
               onChange={(e) => handleChange('linkedin', e.target.value)}
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400 transition-colors"
             />
           </div>
         </div>
@@ -1219,7 +1274,7 @@ const PersonalInfoForm = ({ data, onSave, onImageUpload, saving }) => {
             value={formData.description}
             onChange={(e) => handleChange('description', e.target.value)}
             rows={4}
-            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400 transition-colors"
           />
         </div>
         
@@ -1229,11 +1284,15 @@ const PersonalInfoForm = ({ data, onSave, onImageUpload, saving }) => {
             type="file"
             accept="image/*"
             onChange={handleImageUpload}
-            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-cyan-600 file:text-white hover:file:bg-cyan-500"
           />
           {formData.profile_image && (
-            <div className="mt-2">
-              <img src={formData.profile_image} alt="Profile" className="w-32 h-32 object-cover rounded-lg" />
+            <div className="mt-4">
+              <ClickableImage
+                src={formData.profile_image}
+                alt="Profile Preview"
+                className="w-32 h-32 object-cover rounded-lg border border-gray-600"
+              />
             </div>
           )}
         </div>
@@ -1246,7 +1305,7 @@ const PersonalInfoForm = ({ data, onSave, onImageUpload, saving }) => {
                 type="text"
                 value={skill}
                 onChange={(e) => handleSkillChange(index, e.target.value)}
-                className="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+                className="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400 transition-colors"
                 placeholder={`Compétence ${index + 1}`}
               />
               <button
@@ -1266,13 +1325,32 @@ const PersonalInfoForm = ({ data, onSave, onImageUpload, saving }) => {
         </div>
       </div>
       
-      <button
-        onClick={() => onSave(formData)}
-        disabled={saving}
-        className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-500 transition-colors disabled:opacity-50"
-      >
-        {saving ? 'Sauvegarde...' : 'Sauvegarder'}
-      </button>
+      <div className="flex items-center space-x-4">
+        <button
+          onClick={handleSave}
+          disabled={saving || !hasChanges}
+          className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 ${
+            saving 
+              ? 'bg-gray-600 text-gray-300 cursor-not-allowed' 
+              : hasChanges
+                ? 'bg-green-600 text-white hover:bg-green-500 shadow-lg hover:shadow-green-500/25'
+                : 'bg-gray-600 text-gray-400 cursor-not-allowed'
+          }`}
+        >
+          {saving ? (
+            <div className="flex items-center">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+              Sauvegarde...
+            </div>
+          ) : hasChanges ? '💾 Sauvegarder les modifications' : '✅ Tout est sauvegardé'}
+        </button>
+        
+        {hasChanges && (
+          <span className="text-yellow-400 text-sm">
+            ⚠️ N'oubliez pas de sauvegarder vos modifications
+          </span>
+        )}
+      </div>
     </div>
   );
 };
