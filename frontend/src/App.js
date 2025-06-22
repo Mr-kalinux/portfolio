@@ -377,20 +377,6 @@ const StagePremiereAnnee = () => {
             </p>
           </div>
 
-          {/* Placeholder for Images */}
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-8">
-            <h2 className="text-3xl font-bold text-cyan-400 mb-6">Galerie</h2>
-            <div className="grid md:grid-cols-3 gap-4">
-              {[1, 2, 3].map((item) => (
-                <div key={item} className="bg-gray-700 border border-gray-600 rounded-lg h-48 flex items-center justify-center">
-                  <span className="text-gray-400">Image {item}</span>
-                </div>
-              ))}
-            </div>
-            <p className="text-gray-400 text-sm mt-4">
-              *Vous pourrez ajouter vos propres images ici
-            </p>
-          </div>
         </div>
       </div>
     </div>
