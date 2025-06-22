@@ -6,6 +6,116 @@ import './App.css';
 // Get backend URL from environment
 const API_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
+// Image Modal Component
+const ImageModal = ({ isOpen, onClose, imageSrc, imageAlt }) => {
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4" onClick={onClose}>
+      <div className="relative max-w-7xl max-h-full">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 z-10 bg-black bg-opacity-50 text-white rounded-full p-2 hover:bg-opacity-75 transition-all"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+        <img
+          src={imageSrc}
+          alt={imageAlt}
+          className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+          onClick={(e) => e.stopPropagation()}
+        />
+      </div>
+    </div>
+  );
+};
+
+// Clickable Image Component
+const ClickableImage = ({ src, alt, className, style }) => {
+  const [modalOpen, setModalOpen] = useState(false);
+
+  if (!src) return null;
+
+  return (
+    <>
+      <img
+        src={src}
+        alt={alt}
+        className={`${className} cursor-pointer hover:opacity-80 transition-opacity`}
+        style={style}
+        onClick={() => setModalOpen(true)}
+      />
+      <ImageModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        imageSrc={src}
+        imageAlt={alt}
+      />
+    </>
+  );
+};
+
+// Toast Notification Component
+const Toast = ({ message, type, isVisible, onClose }) => {
+  useEffect(() => {
+    if (isVisible) {
+      const timer = setTimeout(() => {
+        onClose();
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [isVisible, onClose]);
+
+  if (!isVisible) return null;
+
+  const bgColor = type === 'success' ? 'bg-green-600' : type === 'error' ? 'bg-red-600' : 'bg-blue-600';
+
+  return (
+    <div className={`fixed top-4 right-4 z-50 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 ${isVisible ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'}`}>
+      <div className="flex items-center space-x-2">
+        {type === 'success' && (
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+        )}
+        {type === 'error' && (
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        )}
+        <span>{message}</span>
+        <button onClick={onClose} className="ml-2 hover:opacity-75">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+};
+
 // Admin context for managing authentication
 const AdminContext = React.createContext();
 
@@ -186,14 +296,11 @@ const AboutPage = () => {
           
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <div 
-                className="rounded-xl bg-cover bg-center h-96 border border-gray-700"
-                style={{
-                  backgroundImage: personalInfo.profile_image 
-                    ? `url(${personalInfo.profile_image})` 
-                    : 'url(https://images.unsplash.com/photo-1555212697-194d092e3b8f)'
-                }}
-              ></div>
+              <ClickableImage
+                src={personalInfo.profile_image || 'https://images.unsplash.com/photo-1555212697-194d092e3b8f'}
+                alt="Profile"
+                className="rounded-xl bg-cover bg-center h-96 border border-gray-700 w-full object-cover"
+              />
             </div>
             
             <div className="space-y-6">
@@ -342,7 +449,12 @@ const StagePremiereAnnee = () => {
                 <h3 className="text-xl font-semibold text-cyan-400 mb-4">Photos de l'entreprise</h3>
                 <div className="space-y-3">
                   {stageData.images.slice(0, 4).map((image, index) => (
-                    <div key={index} className="rounded-lg h-24 bg-cover bg-center border border-gray-600" style={{backgroundImage: `url(${image})`}}></div>
+                    <ClickableImage
+                      key={index}
+                      src={image}
+                      alt={`Entreprise ${index + 1}`}
+                      className="rounded-lg h-24 w-full object-cover border border-gray-600"
+                    />
                   ))}
                   {stageData.images.length < 4 && Array.from({length: 4 - stageData.images.length}).map((_, index) => (
                     <div key={`placeholder-${index}`} className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-24 flex items-center justify-center hover:border-cyan-400 transition-colors">
@@ -420,7 +532,12 @@ const StagePremiereAnnee = () => {
                     <h4 className="text-lg font-semibold text-cyan-400">Photos de la mission :</h4>
                     <div className="grid grid-cols-2 gap-3">
                       {mission.images && mission.images.slice(0, 3).map((image, imgIndex) => (
-                        <div key={imgIndex} className={`rounded-lg h-32 bg-cover bg-center border border-gray-600 ${imgIndex === 2 ? 'col-span-2' : ''}`} style={{backgroundImage: `url(${image})`}}></div>
+                        <ClickableImage
+                          key={imgIndex}
+                          src={image}
+                          alt={`Mission ${index + 1} - Photo ${imgIndex + 1}`}
+                          className={`rounded-lg h-32 object-cover border border-gray-600 w-full ${imgIndex === 2 ? 'col-span-2' : ''}`}
+                        />
                       ))}
                       {(!mission.images || mission.images.length < 3) && Array.from({length: 3 - (mission.images?.length || 0)}).map((_, imgIndex) => (
                         <div key={`placeholder-${imgIndex}`} className={`bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-32 flex items-center justify-center hover:border-cyan-400 transition-colors ${imgIndex === 2 ? 'col-span-2' : ''}`}>
