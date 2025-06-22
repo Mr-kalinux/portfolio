@@ -1,6 +1,87 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import axios from 'axios';
 import './App.css';
+
+// Get backend URL from environment
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+
+// Admin context for managing authentication
+const AdminContext = React.createContext();
+
+// Admin Auth Provider
+const AdminProvider = ({ children }) => {
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
+  const [adminToken, setAdminToken] = useState(localStorage.getItem('adminToken'));
+
+  useEffect(() => {
+    if (adminToken) {
+      verifyAdminToken();
+    }
+  }, [adminToken]);
+
+  const verifyAdminToken = async () => {
+    try {
+      await axios.get(`${API_URL}/api/admin/verify`, {
+        headers: { Authorization: `Bearer ${adminToken}` }
+      });
+      setIsAdminAuthenticated(true);
+    } catch (error) {
+      localStorage.removeItem('adminToken');
+      setAdminToken(null);
+      setIsAdminAuthenticated(false);
+    }
+  };
+
+  const adminLogin = async (password) => {
+    try {
+      const response = await axios.post(`${API_URL}/api/admin/login`, { password });
+      const token = response.data.token;
+      localStorage.setItem('adminToken', token);
+      setAdminToken(token);
+      setIsAdminAuthenticated(true);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  };
+
+  const adminLogout = async () => {
+    try {
+      if (adminToken) {
+        await axios.post(`${API_URL}/api/admin/logout`, {}, {
+          headers: { Authorization: `Bearer ${adminToken}` }
+        });
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      localStorage.removeItem('adminToken');
+      setAdminToken(null);
+      setIsAdminAuthenticated(false);
+    }
+  };
+
+  return (
+    <AdminContext.Provider value={{
+      isAdminAuthenticated,
+      adminToken,
+      adminLogin,
+      adminLogout
+    }}>
+      {children}
+    </AdminContext.Provider>
+  );
+};
+
+// Hook to use admin context
+const useAdmin = () => {
+  const context = React.useContext(AdminContext);
+  if (!context) {
+    throw new Error('useAdmin must be used within AdminProvider');
+  }
+  return context;
+};
 
 // Components for each page
 const HomePage = () => {
@@ -64,6 +145,37 @@ const HomePage = () => {
 };
 
 const AboutPage = () => {
+  const [personalInfo, setPersonalInfo] = useState(null);
+
+  useEffect(() => {
+    fetchPersonalInfo();
+  }, []);
+
+  const fetchPersonalInfo = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/personal-info`);
+      setPersonalInfo(response.data);
+    } catch (error) {
+      console.error('Error fetching personal info:', error);
+      // Set default data if API fails
+      setPersonalInfo({
+        name: "Votre Nom",
+        email: "votre.email@exemple.com",
+        phone: "+33 X XX XX XX XX",
+        linkedin: "/votre-profil",
+        description: "Étudiant(e) motivé(e) et passionné(e), je poursuis actuellement mes études en [Votre Domaine d'Études]. À travers mes stages, j'ai développé des compétences solides et une vision claire de mon avenir professionnel.",
+        skills: ["Compétence 1", "Compétence 2", "Compétence 3", "Compétence 4", "Compétence 5"],
+        profile_image: ""
+      });
+    }
+  };
+
+  if (!personalInfo) {
+    return <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 flex items-center justify-center">
+      <div className="text-cyan-400 text-xl">Chargement...</div>
+    </div>;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800">
       <div className="container mx-auto px-4 py-16">
@@ -77,7 +189,9 @@ const AboutPage = () => {
               <div 
                 className="rounded-xl bg-cover bg-center h-96 border border-gray-700"
                 style={{
-                  backgroundImage: 'url(https://images.unsplash.com/photo-1555212697-194d092e3b8f)'
+                  backgroundImage: personalInfo.profile_image 
+                    ? `url(${personalInfo.profile_image})` 
+                    : 'url(https://images.unsplash.com/photo-1555212697-194d092e3b8f)'
                 }}
               ></div>
             </div>
@@ -86,15 +200,14 @@ const AboutPage = () => {
               <div className="bg-gray-800 border border-gray-700 rounded-xl p-6">
                 <h3 className="text-2xl font-bold text-cyan-400 mb-4">Profil</h3>
                 <p className="text-gray-300 leading-relaxed">
-                  Étudiant(e) motivé(e) et passionné(e), je poursuis actuellement mes études en [Votre Domaine d'Études]. 
-                  À travers mes stages, j'ai développé des compétences solides et une vision claire de mon avenir professionnel.
+                  {personalInfo.description}
                 </p>
               </div>
               
               <div className="bg-gray-800 border border-gray-700 rounded-xl p-6">
                 <h3 className="text-2xl font-bold text-cyan-400 mb-4">Compétences</h3>
                 <div className="flex flex-wrap gap-2">
-                  {['Compétence 1', 'Compétence 2', 'Compétence 3', 'Compétence 4', 'Compétence 5'].map((skill, index) => (
+                  {personalInfo.skills.map((skill, index) => (
                     <span key={index} className="px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded-full text-sm border border-cyan-500/30">
                       {skill}
                     </span>
@@ -105,9 +218,9 @@ const AboutPage = () => {
               <div className="bg-gray-800 border border-gray-700 rounded-xl p-6">
                 <h3 className="text-2xl font-bold text-cyan-400 mb-4">Contact</h3>
                 <div className="space-y-2 text-gray-300">
-                  <p>📧 votre.email@exemple.com</p>
-                  <p>📱 +33 X XX XX XX XX</p>
-                  <p>🌐 LinkedIn: /votre-profil</p>
+                  <p>📧 {personalInfo.email}</p>
+                  <p>📱 {personalInfo.phone}</p>
+                  <p>🌐 LinkedIn: {personalInfo.linkedin}</p>
                 </div>
               </div>
             </div>
@@ -119,6 +232,59 @@ const AboutPage = () => {
 };
 
 const StagePremiereAnnee = () => {
+  const [stageData, setStageData] = useState(null);
+
+  useEffect(() => {
+    fetchStageData();
+  }, []);
+
+  const fetchStageData = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/stages/stage1`);
+      setStageData(response.data);
+    } catch (error) {
+      console.error('Error fetching stage data:', error);
+      // Set default data if API fails
+      setStageData({
+        stage_type: "stage1",
+        company: "[Nom de l'entreprise]",
+        position: "[Intitulé du poste]",
+        period: "[Date de début - Date de fin]",
+        sector: "[Secteur d'activité]",
+        description: "[Ajoutez ici une description de l'entreprise, son secteur d'activité, sa taille, ses valeurs, et le contexte dans lequel vous avez évolué pendant votre stage.]",
+        missions: [
+          {
+            title: "[Titre de votre mission]",
+            description: "[Décrivez ici votre première mission principale. Expliquez le contexte, vos responsabilités, les défis rencontrés et les résultats obtenus. Cette section peut contenir plusieurs paragraphes pour détailler votre expérience.]",
+            skills: ["Compétence 1", "Compétence 2", "Compétence 3"],
+            images: []
+          },
+          {
+            title: "[Titre de votre mission]",
+            description: "[Décrivez ici votre deuxième mission principale. Mettez l'accent sur l'évolution par rapport à la première mission, les nouvelles responsabilités et les apprentissages spécifiques à cette mission.]",
+            points: ["Point important 1", "Point important 2", "Point important 3"],
+            images: []
+          },
+          {
+            title: "[Titre de votre mission]",
+            description: "[Présentez votre troisième mission principale. Soulignez l'impact de cette mission sur votre développement professionnel et les résultats concrets que vous avez obtenus.]",
+            results: { improvement: "XX%", projects: "XX" },
+            images: []
+          }
+        ],
+        skills: ["Compétence technique 1", "Compétence technique 2", "Compétence technique 3"],
+        achievements: [],
+        images: []
+      });
+    }
+  };
+
+  if (!stageData) {
+    return <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 flex items-center justify-center">
+      <div className="text-cyan-400 text-xl">Chargement...</div>
+    </div>;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800">
       <div 
@@ -147,48 +313,44 @@ const StagePremiereAnnee = () => {
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
                     <h3 className="text-xl font-semibold text-white mb-3">Entreprise</h3>
-                    <p className="text-gray-300">[Nom de l'entreprise]</p>
+                    <p className="text-gray-300">{stageData.company}</p>
                   </div>
                   <div>
                     <h3 className="text-xl font-semibold text-white mb-3">Période</h3>
-                    <p className="text-gray-300">[Date de début - Date de fin]</p>
+                    <p className="text-gray-300">{stageData.period}</p>
                   </div>
                   <div>
                     <h3 className="text-xl font-semibold text-white mb-3">Poste</h3>
-                    <p className="text-gray-300">[Intitulé du poste]</p>
+                    <p className="text-gray-300">{stageData.position}</p>
                   </div>
                   <div>
                     <h3 className="text-xl font-semibold text-white mb-3">Secteur</h3>
-                    <p className="text-gray-300">[Secteur d'activité]</p>
+                    <p className="text-gray-300">{stageData.sector}</p>
                   </div>
                 </div>
                 
                 <div>
                   <h3 className="text-xl font-semibold text-white mb-3">Description de l'entreprise</h3>
                   <p className="text-gray-300 leading-relaxed">
-                    [Ajoutez ici une description de l'entreprise, son secteur d'activité, 
-                    sa taille, ses valeurs, et le contexte dans lequel vous avez évolué 
-                    pendant votre stage.]
+                    {stageData.description}
                   </p>
                 </div>
               </div>
               
               {/* Section Photos de l'entreprise */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-cyan-400 mb-4">Photos de l'entreprise</h3>
+                <h3 className="text-xl font-semibold text-cyan-400 mb-4">Photos de l'entreprise</h3>
                 <div className="space-y-3">
-                  <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-24 flex items-center justify-center hover:border-cyan-400 transition-colors">
-                    <span className="text-gray-400 text-sm text-center">Logo/Façade<br/>entreprise</span>
-                  </div>
-                  <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-24 flex items-center justify-center hover:border-cyan-400 transition-colors">
-                    <span className="text-gray-400 text-sm text-center">Espace de<br/>travail</span>
-                  </div>
-                  <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-24 flex items-center justify-center hover:border-cyan-400 transition-colors">
-                    <span className="text-gray-400 text-sm text-center">Équipe/<br/>Collègues</span>
-                  </div>
-                  <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-24 flex items-center justify-center hover:border-cyan-400 transition-colors">
-                    <span className="text-gray-400 text-sm text-center">Bureaux/<br/>Environnement</span>
-                  </div>
+                  {stageData.images.slice(0, 4).map((image, index) => (
+                    <div key={index} className="rounded-lg h-24 bg-cover bg-center border border-gray-600" style={{backgroundImage: `url(${image})`}}></div>
+                  ))}
+                  {stageData.images.length < 4 && Array.from({length: 4 - stageData.images.length}).map((_, index) => (
+                    <div key={`placeholder-${index}`} className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-24 flex items-center justify-center hover:border-cyan-400 transition-colors">
+                      <span className="text-gray-400 text-sm text-center">
+                        {index === 0 ? "Logo/Façade\nentreprise" : index === 1 ? "Espace de\ntravail" : index === 2 ? "Équipe/\nCollègues" : "Bureaux/\nEnvironnement"}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -197,144 +359,79 @@ const StagePremiereAnnee = () => {
           <div className="bg-gray-800 border border-gray-700 rounded-xl p-8">
             <h2 className="text-3xl font-bold text-cyan-400 mb-8">Missions réalisées</h2>
             
-            {/* Mission 1 */}
-            <div className="mb-12 bg-gray-900/50 border border-gray-600 rounded-xl p-6">
-              <div className="flex items-center mb-4">
-                <div className="w-3 h-3 bg-cyan-400 rounded-full mr-3"></div>
-                <h3 className="text-2xl font-bold text-white">Mission 1 - [Titre de votre mission]</h3>
-              </div>
-              
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <p className="text-gray-300 leading-relaxed">
-                    [Décrivez ici votre première mission principale. Expliquez le contexte, 
-                    vos responsabilités, les défis rencontrés et les résultats obtenus. 
-                    Cette section peut contenir plusieurs paragraphes pour détailler votre expérience.]
-                  </p>
-                  <div className="space-y-2">
-                    <h4 className="text-lg font-semibold text-cyan-400">Compétences développées :</h4>
-                    <div className="flex flex-wrap gap-2">
-                      <span className="px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded-full text-sm border border-cyan-500/30">Compétence 1</span>
-                      <span className="px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded-full text-sm border border-cyan-500/30">Compétence 2</span>
-                      <span className="px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded-full text-sm border border-cyan-500/30">Compétence 3</span>
-                    </div>
-                  </div>
+            {stageData.missions.map((mission, index) => (
+              <div key={index} className="mb-12 bg-gray-900/50 border border-gray-600 rounded-xl p-6">
+                <div className="flex items-center mb-4">
+                  <div className="w-3 h-3 bg-cyan-400 rounded-full mr-3"></div>
+                  <h3 className="text-2xl font-bold text-white">Mission {index + 1} - {mission.title}</h3>
                 </div>
                 
-                <div className="space-y-4">
-                  <h4 className="text-lg font-semibold text-cyan-400">Photos de la mission :</h4>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-32 flex items-center justify-center hover:border-cyan-400 transition-colors">
-                      <span className="text-gray-400 text-sm text-center">Photo 1<br/>Mission 1</span>
-                    </div>
-                    <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-32 flex items-center justify-center hover:border-cyan-400 transition-colors">
-                      <span className="text-gray-400 text-sm text-center">Photo 2<br/>Mission 1</span>
-                    </div>
-                    <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-32 flex items-center justify-center hover:border-cyan-400 transition-colors col-span-2">
-                      <span className="text-gray-400 text-sm text-center">Photo 3<br/>Mission 1</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Mission 2 */}
-            <div className="mb-12 bg-gray-900/50 border border-gray-600 rounded-xl p-6">
-              <div className="flex items-center mb-4">
-                <div className="w-3 h-3 bg-cyan-400 rounded-full mr-3"></div>
-                <h3 className="text-2xl font-bold text-white">Mission 2 - [Titre de votre mission]</h3>
-              </div>
-              
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <p className="text-gray-300 leading-relaxed">
-                    [Décrivez ici votre deuxième mission principale. Mettez l'accent sur 
-                    l'évolution par rapport à la première mission, les nouvelles responsabilités 
-                    et les apprentissages spécifiques à cette mission.]
-                  </p>
-                  <div className="space-y-2">
-                    <h4 className="text-lg font-semibold text-cyan-400">Points clés :</h4>
-                    <ul className="space-y-1">
-                      <li className="flex items-start space-x-2">
-                        <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full mt-2"></div>
-                        <span className="text-gray-300 text-sm">Point important 1</span>
-                      </li>
-                      <li className="flex items-start space-x-2">
-                        <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full mt-2"></div>
-                        <span className="text-gray-300 text-sm">Point important 2</span>
-                      </li>
-                      <li className="flex items-start space-x-2">
-                        <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full mt-2"></div>
-                        <span className="text-gray-300 text-sm">Point important 3</span>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-                
-                <div className="space-y-4">
-                  <h4 className="text-lg font-semibold text-cyan-400">Documentation visuelle :</h4>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-32 flex items-center justify-center hover:border-cyan-400 transition-colors">
-                      <span className="text-gray-400 text-sm text-center">Photo 1<br/>Mission 2</span>
-                    </div>
-                    <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-32 flex items-center justify-center hover:border-cyan-400 transition-colors">
-                      <span className="text-gray-400 text-sm text-center">Photo 2<br/>Mission 2</span>
-                    </div>
-                    <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-32 flex items-center justify-center hover:border-cyan-400 transition-colors col-span-2">
-                      <span className="text-gray-400 text-sm text-center">Photo 3<br/>Mission 2</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Mission 3 */}
-            <div className="mb-8 bg-gray-900/50 border border-gray-600 rounded-xl p-6">
-              <div className="flex items-center mb-4">
-                <div className="w-3 h-3 bg-cyan-400 rounded-full mr-3"></div>
-                <h3 className="text-2xl font-bold text-white">Mission 3 - [Titre de votre mission]</h3>
-              </div>
-              
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <p className="text-gray-300 leading-relaxed">
-                    [Présentez votre troisième mission principale. Soulignez l'impact 
-                    de cette mission sur votre développement professionnel et les résultats 
-                    concrets que vous avez obtenus.]
-                  </p>
-                  <div className="space-y-2">
-                    <h4 className="text-lg font-semibold text-cyan-400">Résultats obtenus :</h4>
-                    <div className="bg-gray-800 border border-gray-700 rounded-lg p-3">
-                      <div className="grid grid-cols-2 gap-4 text-center">
-                        <div>
-                          <div className="text-2xl font-bold text-cyan-400">XX%</div>
-                          <div className="text-gray-400 text-sm">Amélioration</div>
-                        </div>
-                        <div>
-                          <div className="text-2xl font-bold text-cyan-400">XX</div>
-                          <div className="text-gray-400 text-sm">Projets</div>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <p className="text-gray-300 leading-relaxed">
+                      {mission.description}
+                    </p>
+                    
+                    {mission.skills && (
+                      <div className="space-y-2">
+                        <h4 className="text-lg font-semibold text-cyan-400">Compétences développées :</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {mission.skills.map((skill, skillIndex) => (
+                            <span key={skillIndex} className="px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded-full text-sm border border-cyan-500/30">{skill}</span>
+                          ))}
                         </div>
                       </div>
-                    </div>
+                    )}
+                    
+                    {mission.points && (
+                      <div className="space-y-2">
+                        <h4 className="text-lg font-semibold text-cyan-400">Points clés :</h4>
+                        <ul className="space-y-1">
+                          {mission.points.map((point, pointIndex) => (
+                            <li key={pointIndex} className="flex items-start space-x-2">
+                              <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full mt-2"></div>
+                              <span className="text-gray-300 text-sm">{point}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    
+                    {mission.results && (
+                      <div className="space-y-2">
+                        <h4 className="text-lg font-semibold text-cyan-400">Résultats obtenus :</h4>
+                        <div className="bg-gray-800 border border-gray-700 rounded-lg p-3">
+                          <div className="grid grid-cols-2 gap-4 text-center">
+                            <div>
+                              <div className="text-2xl font-bold text-cyan-400">{mission.results.improvement}</div>
+                              <div className="text-gray-400 text-sm">Amélioration</div>
+                            </div>
+                            <div>
+                              <div className="text-2xl font-bold text-cyan-400">{mission.results.projects}</div>
+                              <div className="text-gray-400 text-sm">Projets</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                </div>
-                
-                <div className="space-y-4">
-                  <h4 className="text-lg font-semibold text-cyan-400">Galerie de réalisations :</h4>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-32 flex items-center justify-center hover:border-cyan-400 transition-colors">
-                      <span className="text-gray-400 text-sm text-center">Photo 1<br/>Mission 3</span>
-                    </div>
-                    <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-32 flex items-center justify-center hover:border-cyan-400 transition-colors">
-                      <span className="text-gray-400 text-sm text-center">Photo 2<br/>Mission 3</span>
-                    </div>
-                    <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-32 flex items-center justify-center hover:border-cyan-400 transition-colors col-span-2">
-                      <span className="text-gray-400 text-sm text-center">Photo 3<br/>Mission 3</span>
+                  
+                  <div className="space-y-4">
+                    <h4 className="text-lg font-semibold text-cyan-400">Photos de la mission :</h4>
+                    <div className="grid grid-cols-2 gap-3">
+                      {mission.images && mission.images.slice(0, 3).map((image, imgIndex) => (
+                        <div key={imgIndex} className={`rounded-lg h-32 bg-cover bg-center border border-gray-600 ${imgIndex === 2 ? 'col-span-2' : ''}`} style={{backgroundImage: `url(${image})`}}></div>
+                      ))}
+                      {(!mission.images || mission.images.length < 3) && Array.from({length: 3 - (mission.images?.length || 0)}).map((_, imgIndex) => (
+                        <div key={`placeholder-${imgIndex}`} className={`bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-32 flex items-center justify-center hover:border-cyan-400 transition-colors ${imgIndex === 2 ? 'col-span-2' : ''}`}>
+                          <span className="text-gray-400 text-sm text-center">Photo {imgIndex + 1}<br/>Mission {index + 1}</span>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
+            ))}
           </div>
 
           <div className="bg-gray-800 border border-gray-700 rounded-xl p-8">
@@ -343,7 +440,7 @@ const StagePremiereAnnee = () => {
               <div>
                 <h3 className="text-xl font-semibold text-white mb-3">Compétences techniques</h3>
                 <div className="space-y-2">
-                  {['Compétence technique 1', 'Compétence technique 2', 'Compétence technique 3'].map((skill, index) => (
+                  {stageData.skills.slice(0, 3).map((skill, index) => (
                     <div key={index} className="flex items-center space-x-2">
                       <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full"></div>
                       <span className="text-gray-300">{skill}</span>
@@ -376,7 +473,6 @@ const StagePremiereAnnee = () => {
               et de développer des compétences essentielles pour la suite de mon parcours.
             </p>
           </div>
-
         </div>
       </div>
     </div>
@@ -667,12 +763,647 @@ const ConclusionPage = () => {
   );
 };
 
+// Admin Login Component
+const AdminLogin = () => {
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { adminLogin } = useAdmin();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    const success = await adminLogin(password);
+    if (!success) {
+      setError('Mot de passe incorrect');
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 flex items-center justify-center">
+      <div className="bg-gray-800 border border-gray-700 rounded-xl p-8 w-full max-w-md">
+        <h1 className="text-3xl font-bold text-white mb-6 text-center">
+          Administration <span className="text-cyan-400">Portfolio</span>
+        </h1>
+        
+        <form onSubmit={handleLogin} className="space-y-6">
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
+              Mot de passe
+            </label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+              placeholder="Entrez le mot de passe"
+              required
+            />
+          </div>
+          
+          {error && (
+            <div className="text-red-400 text-sm text-center">
+              {error}
+            </div>
+          )}
+          
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-cyan-500 hover:bg-cyan-400 text-black font-semibold py-2 px-4 rounded-lg transition-colors duration-300 disabled:opacity-50"
+          >
+            {loading ? 'Connexion...' : 'Se connecter'}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+// Admin Dashboard Component
+const AdminDashboard = () => {
+  const [activeTab, setActiveTab] = useState('personal');
+  const [content, setContent] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const { adminToken, adminLogout } = useAdmin();
+
+  useEffect(() => {
+    fetchAllContent();
+  }, []);
+
+  const fetchAllContent = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/admin/content`, {
+        headers: { Authorization: `Bearer ${adminToken}` }
+      });
+      setContent(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching content:', error);
+      setLoading(false);
+    }
+  };
+
+  const handleSave = async (section, data) => {
+    setSaving(true);
+    try {
+      let endpoint = '';
+      if (section === 'personal') {
+        endpoint = '/api/admin/personal-info';
+      } else if (section.startsWith('stage')) {
+        endpoint = '/api/admin/stages';
+      } else {
+        endpoint = `/api/admin/content/${section}`;
+      }
+
+      await axios.post(`${API_URL}${endpoint}`, data, {
+        headers: { Authorization: `Bearer ${adminToken}` }
+      });
+      
+      // Refresh content
+      await fetchAllContent();
+      alert('Sauvegardé avec succès !');
+    } catch (error) {
+      console.error('Error saving:', error);
+      alert('Erreur lors de la sauvegarde');
+    }
+    setSaving(false);
+  };
+
+  const handleImageUpload = async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await axios.post(`${API_URL}/api/admin/upload-image`, formData, {
+        headers: { 
+          Authorization: `Bearer ${adminToken}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      return response.data.data; // Return base64 data
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      alert('Erreur lors de l\'upload de l\'image');
+      return null;
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 flex items-center justify-center">
+        <div className="text-cyan-400 text-xl">Chargement du contenu...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800">
+      {/* Header */}
+      <div className="bg-gray-800 border-b border-gray-700 px-6 py-4">
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-white">
+            Administration <span className="text-cyan-400">Portfolio</span>
+          </h1>
+          <div className="flex space-x-4">
+            <Link to="/" className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors">
+              Voir le site
+            </Link>
+            <button
+              onClick={adminLogout}
+              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-500 transition-colors"
+            >
+              Déconnexion
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex">
+        {/* Sidebar */}
+        <div className="w-64 bg-gray-800 border-r border-gray-700 min-h-screen">
+          <nav className="p-4">
+            <div className="space-y-2">
+              <button
+                onClick={() => setActiveTab('personal')}
+                className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
+                  activeTab === 'personal' ? 'bg-cyan-600 text-white' : 'text-gray-300 hover:bg-gray-700'
+                }`}
+              >
+                À propos de moi
+              </button>
+              <button
+                onClick={() => setActiveTab('stage1')}
+                className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
+                  activeTab === 'stage1' ? 'bg-cyan-600 text-white' : 'text-gray-300 hover:bg-gray-700'
+                }`}
+              >
+                Stage 1ère année
+              </button>
+              <button
+                onClick={() => setActiveTab('stage2')}
+                className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
+                  activeTab === 'stage2' ? 'bg-cyan-600 text-white' : 'text-gray-300 hover:bg-gray-700'
+                }`}
+              >
+                Stage 2ème année
+              </button>
+              <button
+                onClick={() => setActiveTab('conclusion')}
+                className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
+                  activeTab === 'conclusion' ? 'bg-cyan-600 text-white' : 'text-gray-300 hover:bg-gray-700'
+                }`}
+              >
+                Conclusion
+              </button>
+            </div>
+          </nav>
+        </div>
+
+        {/* Main Content */}
+        <div className="flex-1 p-6">
+          {activeTab === 'personal' && (
+            <PersonalInfoForm 
+              data={content?.personal_info || {}} 
+              onSave={(data) => handleSave('personal', data)}
+              onImageUpload={handleImageUpload}
+              saving={saving}
+            />
+          )}
+          {activeTab === 'stage1' && (
+            <StageForm 
+              data={content?.stages?.stage1 || {}} 
+              stageType="stage1"
+              title="Stage 1ère année"
+              onSave={(data) => handleSave('stage1', data)}
+              onImageUpload={handleImageUpload}
+              saving={saving}
+            />
+          )}
+          {activeTab === 'stage2' && (
+            <StageForm 
+              data={content?.stages?.stage2 || {}} 
+              stageType="stage2"
+              title="Stage 2ème année"
+              onSave={(data) => handleSave('stage2', data)}
+              onImageUpload={handleImageUpload}
+              saving={saving}
+            />
+          )}
+          {activeTab === 'conclusion' && (
+            <ConclusionForm 
+              data={content?.sections?.conclusion || {}} 
+              onSave={(data) => handleSave('conclusion', data)}
+              saving={saving}
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Personal Info Form Component
+const PersonalInfoForm = ({ data, onSave, onImageUpload, saving }) => {
+  const [formData, setFormData] = useState({
+    name: data.name || '',
+    email: data.email || '',
+    phone: data.phone || '',
+    linkedin: data.linkedin || '',
+    description: data.description || '',
+    skills: data.skills || [],
+    profile_image: data.profile_image || ''
+  });
+
+  const handleChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleSkillChange = (index, value) => {
+    const newSkills = [...formData.skills];
+    newSkills[index] = value;
+    setFormData(prev => ({ ...prev, skills: newSkills }));
+  };
+
+  const addSkill = () => {
+    setFormData(prev => ({ ...prev, skills: [...prev.skills, ''] }));
+  };
+
+  const removeSkill = (index) => {
+    setFormData(prev => ({ ...prev, skills: prev.skills.filter((_, i) => i !== index) }));
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const imageData = await onImageUpload(file);
+      if (imageData) {
+        handleChange('profile_image', imageData);
+      }
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <h2 className="text-3xl font-bold text-white mb-6">À propos de moi</h2>
+      
+      <div className="bg-gray-800 border border-gray-700 rounded-xl p-6 space-y-4">
+        <div className="grid md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Nom complet</label>
+            <input
+              type="text"
+              value={formData.name}
+              onChange={(e) => handleChange('name', e.target.value)}
+              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
+            <input
+              type="email"
+              value={formData.email}
+              onChange={(e) => handleChange('email', e.target.value)}
+              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Téléphone</label>
+            <input
+              type="text"
+              value={formData.phone}
+              onChange={(e) => handleChange('phone', e.target.value)}
+              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">LinkedIn</label>
+            <input
+              type="text"
+              value={formData.linkedin}
+              onChange={(e) => handleChange('linkedin', e.target.value)}
+              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+            />
+          </div>
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">Description</label>
+          <textarea
+            value={formData.description}
+            onChange={(e) => handleChange('description', e.target.value)}
+            rows={4}
+            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">Photo de profil</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+          />
+          {formData.profile_image && (
+            <div className="mt-2">
+              <img src={formData.profile_image} alt="Profile" className="w-32 h-32 object-cover rounded-lg" />
+            </div>
+          )}
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">Compétences</label>
+          {formData.skills.map((skill, index) => (
+            <div key={index} className="flex items-center space-x-2 mb-2">
+              <input
+                type="text"
+                value={skill}
+                onChange={(e) => handleSkillChange(index, e.target.value)}
+                className="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+                placeholder={`Compétence ${index + 1}`}
+              />
+              <button
+                onClick={() => removeSkill(index)}
+                className="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-500 transition-colors"
+              >
+                Supprimer
+              </button>
+            </div>
+          ))}
+          <button
+            onClick={addSkill}
+            className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-500 transition-colors"
+          >
+            Ajouter une compétence
+          </button>
+        </div>
+      </div>
+      
+      <button
+        onClick={() => onSave(formData)}
+        disabled={saving}
+        className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-500 transition-colors disabled:opacity-50"
+      >
+        {saving ? 'Sauvegarde...' : 'Sauvegarder'}
+      </button>
+    </div>
+  );
+};
+
+// Stage Form Component
+const StageForm = ({ data, stageType, title, onSave, onImageUpload, saving }) => {
+  const [formData, setFormData] = useState({
+    stage_type: stageType,
+    company: data.company || '',
+    position: data.position || '',
+    period: data.period || '',
+    sector: data.sector || '',
+    description: data.description || '',
+    missions: data.missions || [
+      { title: '', description: '', skills: [], images: [] },
+      { title: '', description: '', points: [], images: [] },
+      { title: '', description: '', results: { improvement: '', projects: '' }, images: [] }
+    ],
+    skills: data.skills || [],
+    achievements: data.achievements || [],
+    images: data.images || []
+  });
+
+  const handleChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleMissionChange = (missionIndex, field, value) => {
+    const newMissions = [...formData.missions];
+    newMissions[missionIndex] = { ...newMissions[missionIndex], [field]: value };
+    setFormData(prev => ({ ...prev, missions: newMissions }));
+  };
+
+  const handleImageUpload = async (e, type, index = null) => {
+    const file = e.target.files[0];
+    if (file) {
+      const imageData = await onImageUpload(file);
+      if (imageData) {
+        if (type === 'company') {
+          const newImages = [...formData.images];
+          newImages[index] = imageData;
+          handleChange('images', newImages);
+        } else if (type === 'mission') {
+          const newMissions = [...formData.missions];
+          const newMissionImages = [...(newMissions[index].images || [])];
+          newMissionImages.push(imageData);
+          newMissions[index].images = newMissionImages;
+          setFormData(prev => ({ ...prev, missions: newMissions }));
+        }
+      }
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <h2 className="text-3xl font-bold text-white mb-6">{title}</h2>
+      
+      {/* Informations générales */}
+      <div className="bg-gray-800 border border-gray-700 rounded-xl p-6 space-y-4">
+        <h3 className="text-xl font-bold text-cyan-400 mb-4">Informations générales</h3>
+        <div className="grid md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Entreprise</label>
+            <input
+              type="text"
+              value={formData.company}
+              onChange={(e) => handleChange('company', e.target.value)}
+              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Poste</label>
+            <input
+              type="text"
+              value={formData.position}
+              onChange={(e) => handleChange('position', e.target.value)}
+              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Période</label>
+            <input
+              type="text"
+              value={formData.period}
+              onChange={(e) => handleChange('period', e.target.value)}
+              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Secteur</label>
+            <input
+              type="text"
+              value={formData.sector}
+              onChange={(e) => handleChange('sector', e.target.value)}
+              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+            />
+          </div>
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">Description de l'entreprise</label>
+          <textarea
+            value={formData.description}
+            onChange={(e) => handleChange('description', e.target.value)}
+            rows={3}
+            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">Photos de l'entreprise</label>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {['Logo/Façade', 'Espace de travail', 'Équipe', 'Bureaux'].map((label, index) => (
+              <div key={index}>
+                <label className="block text-xs text-gray-400 mb-1">{label}</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleImageUpload(e, 'company', index)}
+                  className="w-full px-2 py-1 bg-gray-700 border border-gray-600 rounded text-white text-sm"
+                />
+                {formData.images[index] && (
+                  <img src={formData.images[index]} alt={label} className="w-full h-20 object-cover rounded mt-1" />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      
+      {/* Missions */}
+      <div className="bg-gray-800 border border-gray-700 rounded-xl p-6 space-y-6">
+        <h3 className="text-xl font-bold text-cyan-400 mb-4">Missions</h3>
+        {formData.missions.map((mission, index) => (
+          <div key={index} className="bg-gray-900/50 border border-gray-600 rounded-xl p-4 space-y-4">
+            <h4 className="text-lg font-semibold text-white">Mission {index + 1}</h4>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Titre</label>
+              <input
+                type="text"
+                value={mission.title}
+                onChange={(e) => handleMissionChange(index, 'title', e.target.value)}
+                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Description</label>
+              <textarea
+                value={mission.description}
+                onChange={(e) => handleMissionChange(index, 'description', e.target.value)}
+                rows={3}
+                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Photos de la mission</label>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={(e) => handleImageUpload(e, 'mission', index)}
+                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+              />
+              {mission.images && mission.images.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {mission.images.map((img, imgIndex) => (
+                    <img key={imgIndex} src={img} alt={`Mission ${index + 1} - ${imgIndex + 1}`} className="w-20 h-20 object-cover rounded" />
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+      
+      <button
+        onClick={() => onSave(formData)}
+        disabled={saving}
+        className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-500 transition-colors disabled:opacity-50"
+      >
+        {saving ? 'Sauvegarde...' : 'Sauvegarder'}
+      </button>
+    </div>
+  );
+};
+
+// Conclusion Form Component
+const ConclusionForm = ({ data, onSave, saving }) => {
+  const [formData, setFormData] = useState({
+    section_id: 'conclusion',
+    title: data.title || 'Conclusion & Perspectives',
+    content: data.content || ''
+  });
+
+  const handleChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  return (
+    <div className="space-y-6">
+      <h2 className="text-3xl font-bold text-white mb-6">Conclusion</h2>
+      
+      <div className="bg-gray-800 border border-gray-700 rounded-xl p-6 space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">Titre</label>
+          <input
+            type="text"
+            value={formData.title}
+            onChange={(e) => handleChange('title', e.target.value)}
+            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">Contenu</label>
+          <textarea
+            value={formData.content}
+            onChange={(e) => handleChange('content', e.target.value)}
+            rows={10}
+            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+            placeholder="Écrivez votre conclusion ici..."
+          />
+        </div>
+      </div>
+      
+      <button
+        onClick={() => onSave(formData)}
+        disabled={saving}
+        className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-500 transition-colors disabled:opacity-50"
+      >
+        {saving ? 'Sauvegarde...' : 'Sauvegarder'}
+      </button>
+    </div>
+  );
+};
+
 // Navigation Component
 const Navigation = () => {
   const location = useLocation();
   
-  if (location.pathname === '/') {
-    return null; // Don't show navigation on home page
+  if (location.pathname === '/' || location.pathname.startsWith('/admin')) {
+    return null; // Don't show navigation on home page or admin pages
   }
   
   return (
@@ -725,19 +1456,29 @@ const Navigation = () => {
 
 function App() {
   return (
-    <Router>
-      <div className="App">
-        <Navigation />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/stage-premiere-annee" element={<StagePremiereAnnee />} />
-          <Route path="/stage-deuxieme-annee" element={<StageDeuxiemeAnnee />} />
-          <Route path="/conclusion" element={<ConclusionPage />} />
-        </Routes>
-      </div>
-    </Router>
+    <AdminProvider>
+      <Router>
+        <div className="App">
+          <Navigation />
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/stage-premiere-annee" element={<StagePremiereAnnee />} />
+            <Route path="/stage-deuxieme-annee" element={<StageDeuxiemeAnnee />} />
+            <Route path="/conclusion" element={<ConclusionPage />} />
+            <Route path="/admin" element={<AdminRoute />} />
+          </Routes>
+        </div>
+      </Router>
+    </AdminProvider>
   );
 }
+
+// Admin Route Component
+const AdminRoute = () => {
+  const { isAdminAuthenticated } = useAdmin();
+  
+  return isAdminAuthenticated ? <AdminDashboard /> : <AdminLogin />;
+};
 
 export default App;
