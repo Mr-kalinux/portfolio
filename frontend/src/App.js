@@ -140,22 +140,56 @@ const StagePremiereAnnee = () => {
           
           <div className="bg-gray-800 border border-gray-700 rounded-xl p-8">
             <h2 className="text-3xl font-bold text-cyan-400 mb-6">Informations générales</h2>
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <h3 className="text-xl font-semibold text-white mb-3">Entreprise</h3>
-                <p className="text-gray-300">[Nom de l'entreprise]</p>
+            
+            <div className="grid md:grid-cols-3 gap-8">
+              {/* Informations textuelles */}
+              <div className="md:col-span-2 space-y-6">
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <h3 className="text-xl font-semibold text-white mb-3">Entreprise</h3>
+                    <p className="text-gray-300">[Nom de l'entreprise]</p>
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-white mb-3">Période</h3>
+                    <p className="text-gray-300">[Date de début - Date de fin]</p>
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-white mb-3">Poste</h3>
+                    <p className="text-gray-300">[Intitulé du poste]</p>
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-white mb-3">Secteur</h3>
+                    <p className="text-gray-300">[Secteur d'activité]</p>
+                  </div>
+                </div>
+                
+                <div>
+                  <h3 className="text-xl font-semibold text-white mb-3">Description de l'entreprise</h3>
+                  <p className="text-gray-300 leading-relaxed">
+                    [Ajoutez ici une description de l'entreprise, son secteur d'activité, 
+                    sa taille, ses valeurs, et le contexte dans lequel vous avez évolué 
+                    pendant votre stage.]
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-xl font-semibold text-white mb-3">Période</h3>
-                <p className="text-gray-300">[Date de début - Date de fin]</p>
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-white mb-3">Poste</h3>
-                <p className="text-gray-300">[Intitulé du poste]</p>
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-white mb-3">Secteur</h3>
-                <p className="text-gray-300">[Secteur d'activité]</p>
+              
+              {/* Section Photos de l'entreprise */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-cyan-400 mb-4">Photos de l'entreprise</h3>
+                <div className="space-y-3">
+                  <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-24 flex items-center justify-center hover:border-cyan-400 transition-colors">
+                    <span className="text-gray-400 text-sm text-center">Logo/Façade<br/>entreprise</span>
+                  </div>
+                  <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-24 flex items-center justify-center hover:border-cyan-400 transition-colors">
+                    <span className="text-gray-400 text-sm text-center">Espace de<br/>travail</span>
+                  </div>
+                  <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-24 flex items-center justify-center hover:border-cyan-400 transition-colors">
+                    <span className="text-gray-400 text-sm text-center">Équipe/<br/>Collègues</span>
+                  </div>
+                  <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-24 flex items-center justify-center hover:border-cyan-400 transition-colors">
+                    <span className="text-gray-400 text-sm text-center">Bureaux/<br/>Environnement</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
