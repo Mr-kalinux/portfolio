@@ -1564,21 +1564,136 @@ const StageForm = ({ data, stageType, title, onSave, onImageUpload, saving }) =>
         
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-2">Photos de l'entreprise</label>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {['Logo/Façade', 'Espace de travail', 'Équipe', 'Bureaux'].map((label, index) => (
-              <div key={index}>
-                <label className="block text-xs text-gray-400 mb-1">{label}</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleImageUpload(e, 'company', index)}
-                  className="w-full px-2 py-1 bg-gray-700 border border-gray-600 rounded text-white text-sm"
-                />
-                {formData.images[index] && (
-                  <img src={formData.images[index]} alt={label} className="w-full h-20 object-cover rounded mt-1" />
-                )}
+          <div className="grid grid-cols-1 gap-4">
+            {/* Environnement de travail */}
+            <div className="border border-gray-600 rounded-lg p-4">
+              <h4 className="text-cyan-400 font-semibold mb-3">Environnement de travail</h4>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {['Logo/Façade', 'Espace de travail', 'Équipe', 'Bureaux'].map((label, index) => (
+                  <div key={index}>
+                    <label className="block text-xs text-gray-400 mb-1">{label}</label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleImageUpload(e, 'company', index)}
+                      className="w-full px-2 py-1 bg-gray-700 border border-gray-600 rounded text-white text-sm file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:bg-cyan-600 file:text-white hover:file:bg-cyan-500"
+                    />
+                    {formData.images[index] && (
+                      <ClickableImage
+                        src={formData.images[index]}
+                        alt={label}
+                        className="w-full h-20 object-cover rounded mt-1 border border-gray-600"
+                      />
+                    )}
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+
+            {/* Découvertes & Applications */}
+            <div className="border border-gray-600 rounded-lg p-4">
+              <h4 className="text-cyan-400 font-semibold mb-3">Découvertes & Applications</h4>
+              
+              {/* Plans & Organisation */}
+              <div className="mb-4">
+                <h5 className="text-white text-sm mb-2">Plans & Organisation</h5>
+                <div className="grid grid-cols-2 gap-2">
+                  {['Plans des locaux', 'Organigramme'].map((label, index) => (
+                    <div key={index}>
+                      <label className="block text-xs text-gray-400 mb-1">{label}</label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleImageUpload(e, 'company', index + 4)}
+                        className="w-full px-1 py-1 bg-gray-700 border border-gray-600 rounded text-white text-xs file:mr-1 file:py-1 file:px-1 file:rounded file:border-0 file:text-xs file:bg-cyan-600 file:text-white hover:file:bg-cyan-500"
+                      />
+                      {formData.images[index + 4] && (
+                        <ClickableImage
+                          src={formData.images[index + 4]}
+                          alt={label}
+                          className="w-full h-16 object-cover rounded mt-1 border border-gray-600"
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Bureaux & Espaces */}
+              <div className="mb-4">
+                <h5 className="text-white text-sm mb-2">Bureaux & Espaces</h5>
+                <div className="grid grid-cols-2 gap-2">
+                  {['Mon poste de travail', 'Salles de réunion'].map((label, index) => (
+                    <div key={index}>
+                      <label className="block text-xs text-gray-400 mb-1">{label}</label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleImageUpload(e, 'company', index + 6)}
+                        className="w-full px-1 py-1 bg-gray-700 border border-gray-600 rounded text-white text-xs file:mr-1 file:py-1 file:px-1 file:rounded file:border-0 file:text-xs file:bg-cyan-600 file:text-white hover:file:bg-cyan-500"
+                      />
+                      {formData.images[index + 6] && (
+                        <ClickableImage
+                          src={formData.images[index + 6]}
+                          alt={label}
+                          className="w-full h-16 object-cover rounded mt-1 border border-gray-600"
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Dashboards & Outils */}
+              <div className="mb-4">
+                <h5 className="text-white text-sm mb-2">Dashboards & Outils</h5>
+                <div className="grid grid-cols-2 gap-2">
+                  {['Dashboard principal', 'Outils de monitoring'].map((label, index) => (
+                    <div key={index}>
+                      <label className="block text-xs text-gray-400 mb-1">{label}</label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleImageUpload(e, 'company', index + 8)}
+                        className="w-full px-1 py-1 bg-gray-700 border border-gray-600 rounded text-white text-xs file:mr-1 file:py-1 file:px-1 file:rounded file:border-0 file:text-xs file:bg-cyan-600 file:text-white hover:file:bg-cyan-500"
+                      />
+                      {formData.images[index + 8] && (
+                        <ClickableImage
+                          src={formData.images[index + 8]}
+                          alt={label}
+                          className="w-full h-16 object-cover rounded mt-1 border border-gray-600"
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Applications & Technologies */}
+              <div>
+                <h5 className="text-white text-sm mb-2">Applications & Technologies</h5>
+                <div className="grid grid-cols-3 gap-2">
+                  {['Application 1', 'Application 2', 'Plateforme A', 'Plateforme B', 'Outil métier', 'Technologie'].map((label, index) => (
+                    <div key={index}>
+                      <label className="block text-xs text-gray-400 mb-1">{label}</label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleImageUpload(e, 'company', index + 10)}
+                        className="w-full px-1 py-1 bg-gray-700 border border-gray-600 rounded text-white text-xs file:mr-1 file:py-1 file:px-1 file:rounded file:border-0 file:text-xs file:bg-cyan-600 file:text-white hover:file:bg-cyan-500"
+                      />
+                      {formData.images[index + 10] && (
+                        <ClickableImage
+                          src={formData.images[index + 10]}
+                          alt={label}
+                          className="w-full h-12 object-cover rounded mt-1 border border-gray-600"
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
