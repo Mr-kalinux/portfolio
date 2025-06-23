@@ -158,7 +158,11 @@ async def get_all_content(token: str = Depends(verify_admin_token)):
     """Get all content for admin dashboard"""
     try:
         # Get personal info
-        personal_info = db.personal_info.find_one() or {}
+        personal_info = db.personal_info.find_one()
+        if personal_info:
+            personal_info["_id"] = str(personal_info["_id"])
+        else:
+            personal_info = {}
         
         # Get all portfolio sections
         sections = {}
@@ -178,6 +182,7 @@ async def get_all_content(token: str = Depends(verify_admin_token)):
             "stages": stages
         }
     except Exception as e:
+        print(f"Error in get_all_content: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to retrieve content: {str(e)}")
 
 @app.post("/api/admin/personal-info")
@@ -194,6 +199,7 @@ async def update_personal_info(personal_data: PersonalInfo, token: str = Depends
         )
         return {"message": "Personal info updated successfully"}
     except Exception as e:
+        print(f"Error in update_personal_info: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to update personal info: {str(e)}")
 
 @app.post("/api/admin/content/{section}")
@@ -210,6 +216,7 @@ async def update_content_section(section: str, content: ContentSection, token: s
         )
         return {"message": f"Section {section} updated successfully"}
     except Exception as e:
+        print(f"Error in update_content_section: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to update section: {str(e)}")
 
 @app.post("/api/admin/stages")
@@ -226,6 +233,7 @@ async def update_stage_info(stage_data: StageInfo, token: str = Depends(verify_a
         )
         return {"message": f"Stage {stage_data.stage_type} updated successfully"}
     except Exception as e:
+        print(f"Error in update_stage_info: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to update stage: {str(e)}")
 
 @app.post("/api/admin/upload-image")
@@ -251,6 +259,7 @@ async def upload_image(
             "message": "Image uploaded successfully"
         }
     except Exception as e:
+        print(f"Error in upload_image: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to upload image: {str(e)}")
 
 @app.get("/api/admin/images")
@@ -263,6 +272,7 @@ async def get_all_images(token: str = Depends(verify_admin_token)):
             images.append(img)
         return {"images": images}
     except Exception as e:
+        print(f"Error in get_all_images: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to retrieve images: {str(e)}")
 
 @app.delete("/api/admin/images/{filename}")
@@ -275,6 +285,7 @@ async def delete_image(filename: str, token: str = Depends(verify_admin_token)):
         else:
             raise HTTPException(status_code=404, detail="Image not found")
     except Exception as e:
+        print(f"Error in delete_image: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to delete image: {str(e)}")
 
 # Public API Routes (existing routes)
