@@ -412,57 +412,156 @@ const StagePremiereAnnee = () => {
         <div className="max-w-4xl mx-auto space-y-12">
           
           <div className="bg-gray-800 border border-gray-700 rounded-xl p-8">
-            <h2 className="text-3xl font-bold text-cyan-400 mb-6">Informations générales</h2>
+            <h2 className="text-3xl font-bold text-cyan-400 mb-8">Présentation de l'entreprise</h2>
             
-            <div className="grid md:grid-cols-3 gap-8">
-              {/* Informations textuelles */}
-              <div className="md:col-span-2 space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <h3 className="text-xl font-semibold text-white mb-3">Entreprise</h3>
-                    <p className="text-gray-300">{stageData.company}</p>
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold text-white mb-3">Période</h3>
-                    <p className="text-gray-300">{stageData.period}</p>
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold text-white mb-3">Poste</h3>
-                    <p className="text-gray-300">{stageData.position}</p>
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold text-white mb-3">Secteur</h3>
-                    <p className="text-gray-300">{stageData.sector}</p>
-                  </div>
+            {/* Informations de base */}
+            <div className="mb-8">
+              <h3 className="text-2xl font-bold text-white mb-6">Informations générales</h3>
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div className="bg-gray-900/50 border border-gray-600 rounded-lg p-4">
+                  <h4 className="text-lg font-semibold text-cyan-400 mb-2">Entreprise</h4>
+                  <p className="text-gray-300">{stageData.company}</p>
                 </div>
-                
-                <div>
-                  <h3 className="text-xl font-semibold text-white mb-3">Description de l'entreprise</h3>
-                  <p className="text-gray-300 leading-relaxed">
-                    {stageData.description}
-                  </p>
+                <div className="bg-gray-900/50 border border-gray-600 rounded-lg p-4">
+                  <h4 className="text-lg font-semibold text-cyan-400 mb-2">Période</h4>
+                  <p className="text-gray-300">{stageData.period}</p>
+                </div>
+                <div className="bg-gray-900/50 border border-gray-600 rounded-lg p-4">
+                  <h4 className="text-lg font-semibold text-cyan-400 mb-2">Poste</h4>
+                  <p className="text-gray-300">{stageData.position}</p>
+                </div>
+                <div className="bg-gray-900/50 border border-gray-600 rounded-lg p-4">
+                  <h4 className="text-lg font-semibold text-cyan-400 mb-2">Secteur</h4>
+                  <p className="text-gray-300">{stageData.sector}</p>
                 </div>
               </div>
               
-              {/* Section Photos de l'entreprise */}
-              <div className="space-y-4">
-                <h3 className="text-xl font-semibold text-cyan-400 mb-4">Photos de l'entreprise</h3>
-                <div className="space-y-3">
-                  {stageData.images.slice(0, 4).map((image, index) => (
+              <div className="bg-gray-900/50 border border-gray-600 rounded-lg p-6">
+                <h4 className="text-xl font-semibold text-cyan-400 mb-4">À propos de l'entreprise</h4>
+                <p className="text-gray-300 leading-relaxed text-lg">
+                  {stageData.description}
+                </p>
+              </div>
+            </div>
+
+            {/* Section Photos d'entreprise */}
+            <div className="mb-8">
+              <h3 className="text-2xl font-bold text-white mb-6">Environnement de travail</h3>
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {stageData.images.slice(0, 4).map((image, index) => (
+                  <div key={index} className="space-y-2">
+                    <h4 className="text-sm font-medium text-cyan-400">
+                      {index === 0 ? "Logo/Façade" : index === 1 ? "Espace de travail" : index === 2 ? "Équipe/Collègues" : "Bureaux"}
+                    </h4>
                     <ClickableImage
-                      key={index}
                       src={image}
                       alt={`Entreprise ${index + 1}`}
-                      className="rounded-lg h-24 w-full object-cover border border-gray-600"
+                      className="rounded-lg h-32 w-full object-cover border border-gray-600 hover:border-cyan-400 transition-colors"
                     />
-                  ))}
-                  {stageData.images.length < 4 && Array.from({length: 4 - stageData.images.length}).map((_, index) => (
-                    <div key={`placeholder-${index}`} className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-24 flex items-center justify-center hover:border-cyan-400 transition-colors">
-                      <span className="text-gray-400 text-sm text-center">
+                  </div>
+                ))}
+                {stageData.images.length < 4 && Array.from({length: 4 - stageData.images.length}).map((_, index) => (
+                  <div key={`placeholder-${index}`} className="space-y-2">
+                    <h4 className="text-sm font-medium text-cyan-400">
+                      {index === 0 ? "Logo/Façade" : index === 1 ? "Espace de travail" : index === 2 ? "Équipe/Collègues" : "Bureaux"}
+                    </h4>
+                    <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-32 flex items-center justify-center hover:border-cyan-400 transition-colors">
+                      <span className="text-gray-400 text-xs text-center">
                         {index === 0 ? "Logo/Façade\nentreprise" : index === 1 ? "Espace de\ntravail" : index === 2 ? "Équipe/\nCollègues" : "Bureaux/\nEnvironnement"}
                       </span>
                     </div>
-                  ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Nouvelle section : Découvertes & Applications */}
+            <div>
+              <h3 className="text-2xl font-bold text-white mb-6">Découvertes & Applications</h3>
+              <p className="text-gray-300 mb-6 leading-relaxed">
+                Durant ce stage, j'ai eu l'opportunité de découvrir l'écosystème technologique de l'entreprise, 
+                ses outils de travail, ses processus et son organisation spatiale.
+              </p>
+              
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* Plans & Organisation */}
+                <div className="bg-gray-900/50 border border-gray-600 rounded-lg p-4">
+                  <div className="flex items-center mb-4">
+                    <div className="w-3 h-3 bg-cyan-400 rounded-full mr-3"></div>
+                    <h4 className="text-lg font-semibold text-white">Plans & Organisation</h4>
+                  </div>
+                  <p className="text-gray-400 text-sm mb-4">Plans des locaux, organigrammes, structure des équipes</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-24 flex items-center justify-center hover:border-cyan-400 transition-colors">
+                      <span className="text-gray-400 text-xs text-center">Plan des<br/>locaux</span>
+                    </div>
+                    <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-24 flex items-center justify-center hover:border-cyan-400 transition-colors">
+                      <span className="text-gray-400 text-xs text-center">Organigramme</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bureaux & Espaces */}
+                <div className="bg-gray-900/50 border border-gray-600 rounded-lg p-4">
+                  <div className="flex items-center mb-4">
+                    <div className="w-3 h-3 bg-cyan-400 rounded-full mr-3"></div>
+                    <h4 className="text-lg font-semibold text-white">Bureaux & Espaces</h4>
+                  </div>
+                  <p className="text-gray-400 text-sm mb-4">Mon poste de travail, salles de réunion, espaces collaboratifs</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-24 flex items-center justify-center hover:border-cyan-400 transition-colors">
+                      <span className="text-gray-400 text-xs text-center">Mon poste<br/>de travail</span>
+                    </div>
+                    <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-24 flex items-center justify-center hover:border-cyan-400 transition-colors">
+                      <span className="text-gray-400 text-xs text-center">Salles de<br/>réunion</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Dashboards & Outils */}
+                <div className="bg-gray-900/50 border border-gray-600 rounded-lg p-4">
+                  <div className="flex items-center mb-4">
+                    <div className="w-3 h-3 bg-cyan-400 rounded-full mr-3"></div>
+                    <h4 className="text-lg font-semibold text-white">Dashboards & Outils</h4>
+                  </div>
+                  <p className="text-gray-400 text-sm mb-4">Interfaces utilisées, tableaux de bord, outils de monitoring</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-24 flex items-center justify-center hover:border-cyan-400 transition-colors">
+                      <span className="text-gray-400 text-xs text-center">Dashboard<br/>principal</span>
+                    </div>
+                    <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-24 flex items-center justify-center hover:border-cyan-400 transition-colors">
+                      <span className="text-gray-400 text-xs text-center">Outils de<br/>monitoring</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Applications découvertes */}
+                <div className="bg-gray-900/50 border border-gray-600 rounded-lg p-4 md:col-span-2 lg:col-span-3">
+                  <div className="flex items-center mb-4">
+                    <div className="w-3 h-3 bg-cyan-400 rounded-full mr-3"></div>
+                    <h4 className="text-lg font-semibold text-white">Applications & Technologies découvertes</h4>
+                  </div>
+                  <p className="text-gray-400 text-sm mb-4">Logiciels, plateformes et technologies que j'ai découvertes et utilisées</p>
+                  <div className="grid md:grid-cols-3 lg:grid-cols-6 gap-3">
+                    <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-24 flex items-center justify-center hover:border-cyan-400 transition-colors">
+                      <span className="text-gray-400 text-xs text-center">Application<br/>1</span>
+                    </div>
+                    <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-24 flex items-center justify-center hover:border-cyan-400 transition-colors">
+                      <span className="text-gray-400 text-xs text-center">Application<br/>2</span>
+                    </div>
+                    <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-24 flex items-center justify-center hover:border-cyan-400 transition-colors">
+                      <span className="text-gray-400 text-xs text-center">Plateforme<br/>A</span>
+                    </div>
+                    <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-24 flex items-center justify-center hover:border-cyan-400 transition-colors">
+                      <span className="text-gray-400 text-xs text-center">Plateforme<br/>B</span>
+                    </div>
+                    <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-24 flex items-center justify-center hover:border-cyan-400 transition-colors">
+                      <span className="text-gray-400 text-xs text-center">Outil<br/>métier</span>
+                    </div>
+                    <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-24 flex items-center justify-center hover:border-cyan-400 transition-colors">
+                      <span className="text-gray-400 text-xs text-center">Technologie<br/>découverte</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
