@@ -1703,9 +1703,9 @@ const StageForm = ({ data, stageType, title, onSave, onImageUpload, saving }) =>
               </div>
             </div>
 
-            {/* Découvertes & Applications */}
+            {/* Découvertes & Environnement */}
             <div className="border border-gray-600 rounded-lg p-4">
-              <h4 className="text-cyan-400 font-semibold mb-3">Découvertes & Applications</h4>
+              <h4 className="text-cyan-400 font-semibold mb-3">Découvertes & Environnement</h4>
               
               {/* Plans & Organisation */}
               <div className="mb-4">
@@ -1772,11 +1772,11 @@ const StageForm = ({ data, stageType, title, onSave, onImageUpload, saving }) =>
                 </div>
               </div>
 
-              {/* Applications & Technologies */}
-              <div>
-                <h5 className="text-white text-sm mb-2">Applications & Technologies</h5>
-                <div className="grid grid-cols-3 gap-2">
-                  {['Application 1', 'Application 2', 'Plateforme A', 'Plateforme B', 'Outil métier', 'Technologie'].map((label, index) => (
+              {/* Personnel de l'entreprise */}
+              <div className="mb-4">
+                <h5 className="text-white text-sm mb-2">Personnel de l'entreprise</h5>
+                <div className="grid grid-cols-2 gap-2">
+                  {['Équipe/Collègues', 'Encadrants/Managers'].map((label, index) => (
                     <div key={index}>
                       <label className="block text-xs text-gray-400 mb-1">{label}</label>
                       <input
@@ -1788,6 +1788,31 @@ const StageForm = ({ data, stageType, title, onSave, onImageUpload, saving }) =>
                       {formData.images[index + 6] && (
                         <ClickableImage
                           src={formData.images[index + 6]}
+                          alt={label}
+                          className="w-full h-16 object-cover rounded mt-1 border border-gray-600"
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Applications & Technologies */}
+              <div>
+                <h5 className="text-white text-sm mb-2">Applications & Technologies</h5>
+                <div className="grid grid-cols-3 gap-2">
+                  {['Application 1', 'Application 2', 'Plateforme A', 'Plateforme B', 'Outil métier', 'Technologie'].map((label, index) => (
+                    <div key={index}>
+                      <label className="block text-xs text-gray-400 mb-1">{label}</label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleImageUpload(e, 'company', index + 8)}
+                        className="w-full px-1 py-1 bg-gray-700 border border-gray-600 rounded text-white text-xs file:mr-1 file:py-1 file:px-1 file:rounded file:border-0 file:text-xs file:bg-cyan-600 file:text-white hover:file:bg-cyan-500"
+                      />
+                      {formData.images[index + 8] && (
+                        <ClickableImage
+                          src={formData.images[index + 8]}
                           alt={label}
                           className="w-full h-12 object-cover rounded mt-1 border border-gray-600"
                         />
