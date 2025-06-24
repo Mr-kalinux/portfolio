@@ -519,4 +519,38 @@ def run_all_tests():
     return test_results["failed"] == 0
 
 if __name__ == "__main__":
+    # Run basic tests first
     run_all_tests()
+    
+    # Run admin tests separately
+    print("\n\n================================================================================")
+    print("Running Admin API Tests")
+    print("================================================================================\n")
+    
+    # Admin login
+    admin_success = run_test("Admin Login", test_admin_login)
+    
+    if admin_success and admin_token:
+        run_test("Admin Verify Session", test_admin_verify_session)
+        run_test("Admin Get All Content", test_admin_get_all_content)
+        run_test("Admin Update Personal Info", test_admin_update_personal_info)
+        run_test("Admin Update Content Section", test_admin_update_content_section)
+        run_test("Admin Update Stage Info", test_admin_update_stage_info)
+        run_test("Admin Upload Image", test_admin_upload_image)
+        run_test("Admin Logout", test_admin_logout)
+    else:
+        print("⚠️ Skipping admin tests because login failed")
+    
+    # Print final summary
+    print(f"\n{'='*80}\nFinal Test Summary\n{'='*80}")
+    print(f"Total tests: {test_results['total']}")
+    print(f"Passed: {test_results['passed']}")
+    print(f"Failed: {test_results['failed']}")
+    
+    if test_results["errors"]:
+        print("\nErrors:")
+        for error in test_results["errors"]:
+            print(f"  - {error}")
+    
+    success_rate = (test_results["passed"] / test_results["total"]) * 100
+    print(f"\nSuccess rate: {success_rate:.2f}%")
