@@ -492,21 +492,12 @@ const StagePremiereAnnee = () => {
                   </div>
                   <p className="text-gray-400 text-sm mb-4">Plans des locaux, organigrammes, structure des équipes</p>
                   <div className="grid grid-cols-2 gap-2">
-                    {stageData.images.slice(2, 4).map((image, index) => (
-                      <ClickableImage
-                        key={index}
-                        src={image}
-                        alt={index === 0 ? "Plans des locaux" : "Organigramme"}
-                        className="rounded-lg h-24 w-full object-cover border border-gray-600 hover:border-cyan-400 transition-colors"
-                      />
-                    ))}
-                    {stageData.images.slice(2, 4).length < 2 && Array.from({length: 2 - stageData.images.slice(2, 4).length}).map((_, index) => (
-                      <div key={`plans-placeholder-${index}`} className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-24 flex items-center justify-center hover:border-cyan-400 transition-colors">
-                        <span className="text-gray-400 text-xs text-center">
-                          {index === 0 ? "Plan des\nlocaux" : "Organigramme"}
-                        </span>
-                      </div>
-                    ))}
+                    <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-24 flex items-center justify-center hover:border-cyan-400 transition-colors">
+                      <span className="text-gray-400 text-xs text-center">Plan des\nlocaux</span>
+                    </div>
+                    <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-24 flex items-center justify-center hover:border-cyan-400 transition-colors">
+                      <span className="text-gray-400 text-xs text-center">Organigramme</span>
+                    </div>
                   </div>
                 </div>
 
@@ -518,7 +509,7 @@ const StagePremiereAnnee = () => {
                   </div>
                   <p className="text-gray-400 text-sm mb-4">Mon poste de travail, salles de réunion, espaces collaboratifs</p>
                   <div className="grid grid-cols-2 gap-2">
-                    {stageData.images.slice(4, 6).map((image, index) => (
+                    {stageData.images.slice(2, 4).map((image, index) => (
                       <ClickableImage
                         key={index}
                         src={image}
@@ -526,7 +517,7 @@ const StagePremiereAnnee = () => {
                         className="rounded-lg h-24 w-full object-cover border border-gray-600 hover:border-cyan-400 transition-colors"
                       />
                     ))}
-                    {stageData.images.slice(4, 6).length < 2 && Array.from({length: 2 - stageData.images.slice(4, 6).length}).map((_, index) => (
+                    {stageData.images.slice(2, 4).length < 2 && Array.from({length: 2 - stageData.images.slice(2, 4).length}).map((_, index) => (
                       <div key={`bureaux-placeholder-${index}`} className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-24 flex items-center justify-center hover:border-cyan-400 transition-colors">
                         <span className="text-gray-400 text-xs text-center">
                           {index === 0 ? "Mon poste\nde travail" : "Salles de\nréunion"}
@@ -536,26 +527,26 @@ const StagePremiereAnnee = () => {
                   </div>
                 </div>
 
-                {/* Dashboards & Outils */}
+                {/* Équipement informatique */}
                 <div className="bg-gray-900/50 border border-gray-600 rounded-lg p-4">
                   <div className="flex items-center mb-4">
                     <div className="w-3 h-3 bg-cyan-400 rounded-full mr-3"></div>
-                    <h4 className="text-lg font-semibold text-white">Dashboards & Outils</h4>
+                    <h4 className="text-lg font-semibold text-white">Équipement informatique</h4>
                   </div>
-                  <p className="text-gray-400 text-sm mb-4">Interfaces utilisées, tableaux de bord, outils de monitoring</p>
+                  <p className="text-gray-400 text-sm mb-4">Matériel utilisé, configurations, équipements techniques</p>
                   <div className="grid grid-cols-2 gap-2">
-                    {stageData.images.slice(6, 8).map((image, index) => (
+                    {stageData.images.slice(4, 6).map((image, index) => (
                       <ClickableImage
                         key={index}
                         src={image}
-                        alt={index === 0 ? "Dashboard principal" : "Outils de monitoring"}
+                        alt={index === 0 ? "Poste de travail" : "Équipements techniques"}
                         className="rounded-lg h-24 w-full object-cover border border-gray-600 hover:border-cyan-400 transition-colors"
                       />
                     ))}
-                    {stageData.images.slice(6, 8).length < 2 && Array.from({length: 2 - stageData.images.slice(6, 8).length}).map((_, index) => (
-                      <div key={`dashboard-placeholder-${index}`} className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-24 flex items-center justify-center hover:border-cyan-400 transition-colors">
+                    {stageData.images.slice(4, 6).length < 2 && Array.from({length: 2 - stageData.images.slice(4, 6).length}).map((_, index) => (
+                      <div key={`equipement-placeholder-${index}`} className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-24 flex items-center justify-center hover:border-cyan-400 transition-colors">
                         <span className="text-gray-400 text-xs text-center">
-                          {index === 0 ? "Dashboard\nprincipal" : "Outils de\nmonitoring"}
+                          {index === 0 ? "Poste de\ntravail" : "Équipements\ntechniques"}
                         </span>
                       </div>
                     ))}
@@ -570,7 +561,7 @@ const StagePremiereAnnee = () => {
                   </div>
                   <p className="text-gray-400 text-sm mb-4">Logiciels, plateformes et technologies que j'ai découvertes et utilisées</p>
                   <div className="grid md:grid-cols-3 lg:grid-cols-6 gap-3">
-                    {stageData.images.slice(8, 14).map((image, index) => (
+                    {stageData.images.slice(6, 12).map((image, index) => (
                       <ClickableImage
                         key={index}
                         src={image}
@@ -578,7 +569,7 @@ const StagePremiereAnnee = () => {
                         className="rounded-lg h-24 w-full object-cover border border-gray-600 hover:border-cyan-400 transition-colors"
                       />
                     ))}
-                    {stageData.images.slice(8, 14).length < 6 && Array.from({length: 6 - stageData.images.slice(8, 14).length}).map((_, index) => (
+                    {stageData.images.slice(6, 12).length < 6 && Array.from({length: 6 - stageData.images.slice(6, 12).length}).map((_, index) => (
                       <div key={`app-placeholder-${index}`} className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-24 flex items-center justify-center hover:border-cyan-400 transition-colors">
                         <span className="text-gray-400 text-xs text-center">
                           {index === 0 ? "Application\n1" : index === 1 ? "Application\n2" : index === 2 ? "Plateforme\nA" : index === 3 ? "Plateforme\nB" : index === 4 ? "Outil\nmétier" : "Technologie\ndécouverte"}
