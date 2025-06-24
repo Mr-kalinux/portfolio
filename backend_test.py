@@ -267,6 +267,221 @@ def test_delete_contact():
     
     return True
 
+# Admin API Tests
+def test_admin_login():
+    """Test admin login with correct password"""
+    global admin_token
+    
+    login_data = {
+        "password": ADMIN_PASSWORD
+    }
+    
+    response = requests.post(f"{API_URL}/admin/login", json=login_data)
+    print(f"Response status: {response.status_code}")
+    print(f"Response body: {response.text}")
+    
+    if response.status_code != 200:
+        return False
+    
+    data = response.json()
+    if "token" not in data or "expires_at" not in data:
+        return False
+    
+    admin_token = data["token"]
+    print(f"Admin token: {admin_token[:10]}...")
+    return True
+
+def test_admin_verify_session():
+    """Test verifying admin session"""
+    if not admin_token:
+        print("No admin token available")
+        return False
+    
+    headers = {"Authorization": f"Bearer {admin_token}"}
+    response = requests.get(f"{API_URL}/admin/verify", headers=headers)
+    print(f"Response status: {response.status_code}")
+    print(f"Response body: {response.text}")
+    
+    if response.status_code != 200:
+        return False
+    
+    data = response.json()
+    return data.get("valid") == True
+
+def test_admin_get_all_content():
+    """Test getting all content for admin dashboard"""
+    if not admin_token:
+        print("No admin token available")
+        return False
+    
+    headers = {"Authorization": f"Bearer {admin_token}"}
+    response = requests.get(f"{API_URL}/admin/content", headers=headers)
+    print(f"Response status: {response.status_code}")
+    print(f"Response body: {response.text[:200]}...")  # Truncated for brevity
+    
+    if response.status_code != 200:
+        return False
+    
+    data = response.json()
+    return ("personal_info" in data and 
+            "sections" in data and 
+            "stages" in data)
+
+def test_admin_update_personal_info():
+    """Test updating personal information"""
+    if not admin_token:
+        print("No admin token available")
+        return False
+    
+    personal_data = {
+        "name": "Test User",
+        "email": "test@example.com",
+        "phone": "+33 1 23 45 67 89",
+        "linkedin": "https://linkedin.com/in/testuser",
+        "description": "This is a test description for the personal info section.",
+        "skills": ["Python", "FastAPI", "React", "MongoDB"]
+    }
+    
+    headers = {"Authorization": f"Bearer {admin_token}"}
+    response = requests.post(f"{API_URL}/admin/personal-info", json=personal_data, headers=headers)
+    print(f"Response status: {response.status_code}")
+    print(f"Response body: {response.text}")
+    
+    if response.status_code != 200:
+        return False
+    
+    # Verify the update by getting all content
+    response = requests.get(f"{API_URL}/admin/content", headers=headers)
+    if response.status_code != 200:
+        return False
+    
+    data = response.json()
+    if "personal_info" not in data:
+        return False
+    
+    personal_info = data["personal_info"]
+    return (personal_info.get("name") == personal_data["name"] and
+            personal_info.get("email") == personal_data["email"] and
+            personal_info.get("phone") == personal_data["phone"])
+
+def test_admin_update_content_section():
+    """Test updating a content section"""
+    if not admin_token:
+        print("No admin token available")
+        return False
+    
+    section = "about"
+    content_data = {
+        "section_id": section,
+        "title": "About Me",
+        "content": "This is a test content for the About section.",
+        "images": [],
+        "metadata": {"last_updated": datetime.now().isoformat()}
+    }
+    
+    headers = {"Authorization": f"Bearer {admin_token}"}
+    response = requests.post(f"{API_URL}/admin/content/{section}", json=content_data, headers=headers)
+    print(f"Response status: {response.status_code}")
+    print(f"Response body: {response.text}")
+    
+    if response.status_code != 200:
+        return False
+    
+    # Verify the update by getting all content
+    response = requests.get(f"{API_URL}/admin/content", headers=headers)
+    if response.status_code != 200:
+        return False
+    
+    data = response.json()
+    if "sections" not in data or section not in data["sections"]:
+        return False
+    
+    return True
+
+def test_admin_update_stage_info():
+    """Test updating stage information"""
+    if not admin_token:
+        print("No admin token available")
+        return False
+    
+    stage_data = {
+        "stage_type": "stage1",
+        "company": "Test Company",
+        "position": "Test Position",
+        "period": "Jan 2023 - Jun 2023",
+        "sector": "Technology",
+        "description": "This is a test description for the stage.",
+        "missions": [
+            {"title": "Mission 1", "description": "Description for mission 1"},
+            {"title": "Mission 2", "description": "Description for mission 2"}
+        ],
+        "skills": ["Python", "FastAPI", "MongoDB"],
+        "achievements": ["Achievement 1", "Achievement 2"],
+        "images": []
+    }
+    
+    headers = {"Authorization": f"Bearer {admin_token}"}
+    response = requests.post(f"{API_URL}/admin/stages", json=stage_data, headers=headers)
+    print(f"Response status: {response.status_code}")
+    print(f"Response body: {response.text}")
+    
+    if response.status_code != 200:
+        return False
+    
+    # Verify the update by getting all content
+    response = requests.get(f"{API_URL}/admin/content", headers=headers)
+    if response.status_code != 200:
+        return False
+    
+    data = response.json()
+    if "stages" not in data or stage_data["stage_type"] not in data["stages"]:
+        return False
+    
+    return True
+
+def test_admin_upload_image():
+    """Test uploading an image"""
+    if not admin_token:
+        print("No admin token available")
+        return False
+    
+    # Create a simple test image
+    img = Image.new('RGB', (100, 100), color='red')
+    img_io = BytesIO()
+    img.save(img_io, 'JPEG')
+    img_io.seek(0)
+    
+    headers = {"Authorization": f"Bearer {admin_token}"}
+    files = {'file': ('test_image.jpg', img_io, 'image/jpeg')}
+    
+    response = requests.post(f"{API_URL}/admin/upload-image", headers=headers, files=files)
+    print(f"Response status: {response.status_code}")
+    print(f"Response body: {response.text[:200]}...")  # Truncated for brevity
+    
+    if response.status_code != 200:
+        return False
+    
+    data = response.json()
+    return "filename" in data and "data" in data and data["data"].startswith("data:image/jpeg;base64,")
+
+def test_admin_logout():
+    """Test admin logout"""
+    if not admin_token:
+        print("No admin token available")
+        return False
+    
+    headers = {"Authorization": f"Bearer {admin_token}"}
+    response = requests.post(f"{API_URL}/admin/logout", headers=headers)
+    print(f"Response status: {response.status_code}")
+    print(f"Response body: {response.text}")
+    
+    if response.status_code != 200:
+        return False
+    
+    # Verify logout by trying to access a protected endpoint
+    response = requests.get(f"{API_URL}/admin/content", headers=headers)
+    return response.status_code == 401  # Should be unauthorized after logout
+
 def run_all_tests():
     """Run all API tests"""
     print(f"\n{'='*80}\nStarting Portfolio Backend API Tests\n{'='*80}")
