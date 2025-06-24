@@ -5,6 +5,9 @@ import time
 from datetime import datetime
 import sys
 import os
+import base64
+from io import BytesIO
+from PIL import Image
 
 # Get the backend URL from the frontend .env file
 def get_backend_url():
@@ -25,6 +28,10 @@ if not BASE_URL:
 
 API_URL = f"{BASE_URL}/api"
 print(f"Using API URL: {API_URL}")
+
+# Admin credentials
+ADMIN_PASSWORD = "Sk4t3_b0Ar5"  # From server.py line 33
+admin_token = None
 
 # Test results tracking
 test_results = {
