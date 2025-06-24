@@ -446,28 +446,28 @@ const StagePremiereAnnee = () => {
 
             {/* Section Photos d'entreprise */}
             <div className="mb-8">
-              <h3 className="text-2xl font-bold text-white mb-6">Environnement de travail</h3>
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {stageData.images.slice(0, 4).map((image, index) => (
+              <h3 className="text-2xl font-bold text-white mb-6">Identité visuelle</h3>
+              <div className="grid md:grid-cols-2 gap-6 max-w-2xl">
+                {stageData.images.slice(0, 2).map((image, index) => (
                   <div key={index} className="space-y-2">
                     <h4 className="text-sm font-medium text-cyan-400">
-                      {index === 0 ? "Logo/Façade" : index === 1 ? "Espace de travail" : index === 2 ? "Équipe/Collègues" : "Bureaux"}
+                      {index === 0 ? "Logo de l'entreprise" : "Façade/Bâtiment"}
                     </h4>
                     <ClickableImage
                       src={image}
-                      alt={`Entreprise ${index + 1}`}
-                      className="rounded-lg h-32 w-full object-cover border border-gray-600 hover:border-cyan-400 transition-colors"
+                      alt={index === 0 ? "Logo de l'entreprise" : "Façade/Bâtiment"}
+                      className="rounded-lg h-40 w-full object-cover border border-gray-600 hover:border-cyan-400 transition-colors"
                     />
                   </div>
                 ))}
-                {stageData.images.length < 4 && Array.from({length: 4 - stageData.images.length}).map((_, index) => (
+                {stageData.images.length < 2 && Array.from({length: 2 - stageData.images.length}).map((_, index) => (
                   <div key={`placeholder-${index}`} className="space-y-2">
                     <h4 className="text-sm font-medium text-cyan-400">
-                      {index === 0 ? "Logo/Façade" : index === 1 ? "Espace de travail" : index === 2 ? "Équipe/Collègues" : "Bureaux"}
+                      {index === 0 ? "Logo de l'entreprise" : "Façade/Bâtiment"}
                     </h4>
-                    <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-32 flex items-center justify-center hover:border-cyan-400 transition-colors">
+                    <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-40 flex items-center justify-center hover:border-cyan-400 transition-colors">
                       <span className="text-gray-400 text-xs text-center">
-                        {index === 0 ? "Logo/Façade\nentreprise" : index === 1 ? "Espace de\ntravail" : index === 2 ? "Équipe/\nCollègues" : "Bureaux/\nEnvironnement"}
+                        {index === 0 ? "Logo de\nl'entreprise" : "Façade/\nBâtiment"}
                       </span>
                     </div>
                   </div>
