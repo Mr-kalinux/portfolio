@@ -1714,9 +1714,19 @@ const StageForm = ({ data, stageType, title, onSave, onImageUpload, saving }) =>
                   {['Plans des locaux', 'Organigramme'].map((label, index) => (
                     <div key={index}>
                       <label className="block text-xs text-gray-400 mb-1">{label}</label>
-                      <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded text-white text-xs p-2 text-center h-16 flex items-center justify-center">
-                        <span className="text-gray-400">À venir</span>
-                      </div>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleImageUpload(e, 'company', index + 14)}
+                        className="w-full px-1 py-1 bg-gray-700 border border-gray-600 rounded text-white text-xs file:mr-1 file:py-1 file:px-1 file:rounded file:border-0 file:text-xs file:bg-cyan-600 file:text-white hover:file:bg-cyan-500"
+                      />
+                      {formData.images[index + 14] && (
+                        <ClickableImage
+                          src={formData.images[index + 14]}
+                          alt={label}
+                          className="w-full h-16 object-cover rounded mt-1 border border-gray-600"
+                        />
+                      )}
                     </div>
                   ))}
                 </div>
