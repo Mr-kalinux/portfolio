@@ -146,7 +146,11 @@ def test_stage_info():
         "position": "Test Position",
         "period": "Jan 2023 - Jun 2023",
         "sector": "Technology",
-        "missions": ["Mission 1", "Mission 2"],
+        "description": "Test description",
+        "missions": [
+            {"title": "Mission 1", "description": "Description for mission 1"},
+            {"title": "Mission 2", "description": "Description for mission 2"}
+        ],
         "skills": ["Skill 1", "Skill 2"],
         "achievements": ["Achievement 1"],
         "images": ["https://example.com/stage_image.jpg"]
