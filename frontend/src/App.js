@@ -1635,12 +1635,14 @@ const StageForm = ({ data, stageType, title, onSave, onImageUpload, saving }) =>
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    setHasChanges(true);
   };
 
   const handleMissionChange = (missionIndex, field, value) => {
     const newMissions = [...formData.missions];
     newMissions[missionIndex] = { ...newMissions[missionIndex], [field]: value };
     setFormData(prev => ({ ...prev, missions: newMissions }));
+    setHasChanges(true);
   };
 
   const handleImageUpload = async (e, type, index = null) => {
