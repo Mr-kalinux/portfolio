@@ -1949,41 +1949,14 @@ const StageForm = ({ data, stageType, title, onSave, onImageUpload, saving }) =>
             )}
             
             {index === 2 && (
-              <div className="space-y-4">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Amélioration (%)</label>
-                    <input
-                      type="text"
-                      value={mission.results?.improvement || ''}
-                      onChange={(e) => handleMissionChange(index, 'results', { ...mission.results, improvement: e.target.value })}
-                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
-                      placeholder="25%"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Nombre de projets</label>
-                    <input
-                      type="text"
-                      value={mission.results?.projects || ''}
-                      onChange={(e) => handleMissionChange(index, 'results', { ...mission.results, projects: e.target.value })}
-                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
-                      placeholder="5"
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-            
-            {index === 3 && (
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Réalisations principales (séparées par des virgules)</label>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Compétences avancées (séparées par des virgules)</label>
                 <input
                   type="text"
-                  value={mission.achievements ? mission.achievements.join(', ') : ''}
-                  onChange={(e) => handleMissionChange(index, 'achievements', e.target.value.split(', ').filter(s => s.trim()))}
+                  value={mission.skills ? mission.skills.join(', ') : ''}
+                  onChange={(e) => handleMissionChange(index, 'skills', e.target.value.split(', ').filter(s => s.trim()))}
                   className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
-                  placeholder="Réalisation 1, Réalisation 2, Réalisation 3"
+                  placeholder="Compétence avancée 1, Compétence avancée 2, Compétence avancée 3"
                 />
               </div>
             )}
