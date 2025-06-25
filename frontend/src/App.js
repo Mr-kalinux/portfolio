@@ -1346,34 +1346,37 @@ const AdminDashboard = () => {
           {activeTab === 'personal' && (
             <PersonalInfoForm 
               data={content?.personal_info || {}} 
-              onSave={(data) => handleSave('personal', data)}
+              onSave={(data) => handleSave('personal', data)} 
               onImageUpload={handleImageUpload}
               saving={saving}
             />
           )}
+          
           {activeTab === 'stage1' && (
             <StageForm 
-              data={content?.stages?.stage1 || {}} 
+              data={content?.stages?.find(s => s.stage_type === 'stage1') || {}} 
               stageType="stage1"
               title="Stage 1ère année"
-              onSave={(data) => handleSave('stage1', data)}
+              onSave={(data) => handleSave('stages', data)} 
               onImageUpload={handleImageUpload}
               saving={saving}
             />
           )}
+          
           {activeTab === 'stage2' && (
             <StageForm 
-              data={content?.stages?.stage2 || {}} 
+              data={content?.stages?.find(s => s.stage_type === 'stage2') || {}} 
               stageType="stage2"
               title="Stage 2ème année"
-              onSave={(data) => handleSave('stage2', data)}
+              onSave={(data) => handleSave('stages', data)} 
               onImageUpload={handleImageUpload}
               saving={saving}
             />
           )}
+          
           {activeTab === 'conclusion' && (
             <ConclusionForm 
-              data={content?.sections?.conclusion || {}} 
+              data={content?.sections?.find(s => s.section_id === 'conclusion') || {}} 
               onSave={(data) => handleSave('conclusion', data)}
               saving={saving}
             />
@@ -1384,7 +1387,7 @@ const AdminDashboard = () => {
   );
 };
 
-// Personal Info Form Component
+// PersonalInfoForm Component
 const PersonalInfoForm = ({ data, onSave, onImageUpload, saving }) => {
   const [formData, setFormData] = useState({
     name: data.name || '',
@@ -1450,24 +1453,17 @@ const PersonalInfoForm = ({ data, onSave, onImageUpload, saving }) => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold text-white">À propos de moi</h2>
-        {hasChanges && (
-          <span className="text-orange-400 text-sm">
-            💾 Modifications non sauvegardées
-          </span>
-        )}
-      </div>
+      <h2 className="text-3xl font-bold text-white mb-6">Informations personnelles</h2>
       
       <div className="bg-gray-800 border border-gray-700 rounded-xl p-6 space-y-4">
         <div className="grid md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Nom complet</label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Nom</label>
             <input
               type="text"
               value={formData.name}
               onChange={(e) => handleChange('name', e.target.value)}
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400 transition-colors"
+              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
             />
           </div>
           
@@ -1477,7 +1473,7 @@ const PersonalInfoForm = ({ data, onSave, onImageUpload, saving }) => {
               type="email"
               value={formData.email}
               onChange={(e) => handleChange('email', e.target.value)}
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400 transition-colors"
+              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
             />
           </div>
           
@@ -1487,7 +1483,7 @@ const PersonalInfoForm = ({ data, onSave, onImageUpload, saving }) => {
               type="text"
               value={formData.phone}
               onChange={(e) => handleChange('phone', e.target.value)}
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400 transition-colors"
+              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
             />
           </div>
           
@@ -1497,7 +1493,7 @@ const PersonalInfoForm = ({ data, onSave, onImageUpload, saving }) => {
               type="text"
               value={formData.linkedin}
               onChange={(e) => handleChange('linkedin', e.target.value)}
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400 transition-colors"
+              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
             />
           </div>
         </div>
@@ -1508,88 +1504,68 @@ const PersonalInfoForm = ({ data, onSave, onImageUpload, saving }) => {
             value={formData.description}
             onChange={(e) => handleChange('description', e.target.value)}
             rows={4}
-            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400 transition-colors"
+            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
           />
         </div>
         
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-2">Photo de profil</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-cyan-600 file:text-white hover:file:bg-cyan-500"
-          />
-          {formData.profile_image && (
-            <div className="mt-4">
-              <ClickableImage
-                src={formData.profile_image}
-                alt="Profile Preview"
-                className="w-32 h-32 object-cover rounded-lg border border-gray-600"
-              />
-            </div>
-          )}
+          <div className="flex items-center space-x-4">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+            />
+            {formData.profile_image && (
+              <img src={formData.profile_image} alt="Profile" className="w-16 h-16 object-cover rounded-full" />
+            )}
+          </div>
         </div>
         
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-2">Compétences</label>
-          {formData.skills.map((skill, index) => (
-            <div key={index} className="flex items-center space-x-2 mb-2">
-              <input
-                type="text"
-                value={skill}
-                onChange={(e) => handleSkillChange(index, e.target.value)}
-                className="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400 transition-colors"
-                placeholder={`Compétence ${index + 1}`}
-              />
-              <button
-                onClick={() => removeSkill(index)}
-                className="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-500 transition-colors"
-              >
-                Supprimer
-              </button>
-            </div>
-          ))}
-          <button
-            onClick={addSkill}
-            className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-500 transition-colors"
-          >
-            Ajouter une compétence
-          </button>
+          <div className="space-y-2">
+            {formData.skills.map((skill, index) => (
+              <div key={index} className="flex items-center space-x-2">
+                <input
+                  type="text"
+                  value={skill}
+                  onChange={(e) => handleSkillChange(index, e.target.value)}
+                  className="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+                />
+                <button
+                  onClick={() => removeSkill(index)}
+                  className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-500 transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            ))}
+            <button
+              onClick={addSkill}
+              className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-500 transition-colors"
+            >
+              Ajouter une compétence
+            </button>
+          </div>
         </div>
       </div>
       
-      <div className="flex items-center space-x-4">
-        <button
-          onClick={handleSave}
-          disabled={saving || !hasChanges}
-          className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 ${
-            saving 
-              ? 'bg-gray-600 text-gray-300 cursor-not-allowed' 
-              : hasChanges
-                ? 'bg-green-600 text-white hover:bg-green-500 shadow-lg hover:shadow-green-500/25'
-                : 'bg-gray-600 text-gray-400 cursor-not-allowed'
-          }`}
-        >
-          {saving ? (
-            <div className="flex items-center">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-              Sauvegarde...
-            </div>
-          ) : hasChanges ? '💾 Sauvegarder les modifications' : '✅ Tout est sauvegardé'}
-        </button>
-        
-        {hasChanges && (
-          <span className="text-yellow-400 text-sm">
-            ⚠️ N'oubliez pas de sauvegarder vos modifications
-          </span>
-        )}
-      </div>
+      <button
+        onClick={handleSave}
+        disabled={saving}
+        className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-500 transition-colors disabled:opacity-50"
+      >
+        {saving ? 'Sauvegarde...' : 'Sauvegarder'}
+      </button>
     </div>
   );
 };
 
-// Stage Form Component
+// StageForm Component
 const StageForm = ({ data, stageType, title, onSave, onImageUpload, saving }) => {
   const [formData, setFormData] = useState({
     stage_type: stageType,
@@ -2007,7 +1983,7 @@ const StageForm = ({ data, stageType, title, onSave, onImageUpload, saving }) =>
       </div>
       
       <button
-        onClick={() => onSave(formData)}
+        onClick={handleSave}
         disabled={saving}
         className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-500 transition-colors disabled:opacity-50"
       >
@@ -2067,83 +2043,25 @@ const ConclusionForm = ({ data, onSave, saving }) => {
   );
 };
 
-// Navigation Component
-const Navigation = () => {
-  const location = useLocation();
-  
-  if (location.pathname === '/' || location.pathname.startsWith('/admin')) {
-    return null; // Don't show navigation on home page or admin pages
-  }
-  
-  return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-sm border-b border-gray-800">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between py-4">
-          <Link to="/" className="text-2xl font-bold text-white hover:text-cyan-400 transition-colors">
-            Portfolio
-          </Link>
-          
-          <div className="flex space-x-6">
-            <Link 
-              to="/about" 
-              className={`hover:text-cyan-400 transition-colors ${
-                location.pathname === '/about' ? 'text-cyan-400' : 'text-gray-300'
-              }`}
-            >
-              À propos
-            </Link>
-            <Link 
-              to="/stage-premiere-annee" 
-              className={`hover:text-cyan-400 transition-colors ${
-                location.pathname === '/stage-premiere-annee' ? 'text-cyan-400' : 'text-gray-300'
-              }`}
-            >
-              Stage 1ère
-            </Link>
-            <Link 
-              to="/stage-deuxieme-annee" 
-              className={`hover:text-cyan-400 transition-colors ${
-                location.pathname === '/stage-deuxieme-annee' ? 'text-cyan-400' : 'text-gray-300'
-              }`}
-            >
-              Stage 2ème
-            </Link>
-            <Link 
-              to="/conclusion" 
-              className={`hover:text-cyan-400 transition-colors ${
-                location.pathname === '/conclusion' ? 'text-cyan-400' : 'text-gray-300'
-              }`}
-            >
-              Conclusion
-            </Link>
-          </div>
-        </div>
-      </div>
-    </nav>
-  );
-};
-
+// Main App Component
 function App() {
   return (
     <AdminProvider>
       <Router>
-        <div className="App">
-          <Navigation />
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/stage-premiere-annee" element={<StagePremiereAnnee />} />
-            <Route path="/stage-deuxieme-annee" element={<StageDeuxiemeAnnee />} />
-            <Route path="/conclusion" element={<ConclusionPage />} />
-            <Route path="/admin" element={<AdminRoute />} />
-          </Routes>
-        </div>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/stage-premiere-annee" element={<StagePremiereAnnee />} />
+          <Route path="/stage-deuxieme-annee" element={<StageDeuxiemeAnnee />} />
+          <Route path="/conclusion" element={<ConclusionPage />} />
+          <Route path="/admin" element={<AdminRoute />} />
+        </Routes>
       </Router>
     </AdminProvider>
   );
 }
 
-// Admin Route Component
+// Admin Route with Authentication
 const AdminRoute = () => {
   const { isAdminAuthenticated } = useAdmin();
   
