@@ -333,9 +333,9 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Portfolio homepage with navigation"
-    - "Navigation between pages"
-  stuck_tasks: []
+    - "Admin interface save functionality"
+  stuck_tasks:
+    - "Admin interface save functionality"
   test_all: false
   test_priority: "high_first"
 
