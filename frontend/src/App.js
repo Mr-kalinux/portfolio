@@ -1963,9 +1963,17 @@ const ConclusionForm = ({ data, onSave, saving }) => {
     title: data.title || 'Conclusion & Perspectives',
     content: data.content || ''
   });
+  
+  const [hasChanges, setHasChanges] = useState(false);
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    setHasChanges(true);
+  };
+  
+  const handleSaveConclusion = () => {
+    onSave(formData);
+    setHasChanges(false);
   };
 
   return (
@@ -1996,10 +2004,7 @@ const ConclusionForm = ({ data, onSave, saving }) => {
       </div>
       
       <button
-        onClick={() => {
-          onSave(formData);
-          setHasChanges(false);
-        }}
+        onClick={handleSaveConclusion}
         disabled={saving}
         className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-500 transition-colors disabled:opacity-50"
       >
