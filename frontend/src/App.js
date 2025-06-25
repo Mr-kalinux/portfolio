@@ -964,6 +964,284 @@ const StageDeuxiemeAnnee = () => {
   );
 };
 
+const Mission3Page = () => {
+  const [stageData, setStageData] = useState(null);
+
+  useEffect(() => {
+    fetchStageData();
+  }, []);
+
+  const fetchStageData = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/stages/mission3`);
+      setStageData(response.data);
+    } catch (error) {
+      console.error('Error fetching mission3 data:', error);
+      // Set default data if API fails
+      setStageData({
+        stage_type: "mission3",
+        company: "[Nom de l'entreprise/organisation]",
+        position: "[Intitulé du poste/mission]",
+        period: "[Date de début - Date de fin]",
+        sector: "[Secteur d'activité]",
+        description: "[Ajoutez ici une description de l'entreprise ou de l'organisation où s'est déroulée cette mission, son secteur d'activité, sa taille, ses valeurs, et le contexte spécifique de cette mission.]",
+        missions: [
+          {
+            title: "[Titre de votre mission principale]",
+            description: "[Décrivez ici votre mission principale. Expliquez le contexte, vos responsabilités, les défis rencontrés et les résultats obtenus. Cette section peut contenir plusieurs paragraphes pour détailler votre expérience.]",
+            skills: ["Compétence 1", "Compétence 2", "Compétence 3"],
+            images: []
+          },
+          {
+            title: "[Titre de votre mission secondaire]",
+            description: "[Décrivez ici votre mission secondaire. Mettez l'accent sur la complémentarité avec la mission principale, les nouvelles responsabilités et les apprentissages spécifiques.]",
+            points: ["Point important 1", "Point important 2", "Point important 3"],
+            images: []
+          },
+          {
+            title: "[Titre de votre mission de développement]",
+            description: "[Présentez votre mission de développement. Soulignez l'impact de cette mission sur votre évolution professionnelle et les résultats concrets obtenus.]",
+            results: { improvement: "XX%", projects: "XX" },
+            images: []
+          }
+        ],
+        skills: ["Compétence technique 1", "Compétence technique 2", "Compétence technique 3"],
+        achievements: [],
+        images: []
+      });
+    }
+  };
+
+  if (!stageData) {
+    return <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 flex items-center justify-center">
+      <div className="text-cyan-400 text-xl">Chargement...</div>
+    </div>;
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800">
+      <div 
+        className="h-64 bg-cover bg-center relative"
+        style={{
+          backgroundImage: 'url(https://images.unsplash.com/photo-1552664730-d307ca884978)'
+        }}
+      >
+        <div className="absolute inset-0 bg-black/60"></div>
+        <div className="relative z-10 h-full flex items-center justify-center">
+          <h1 className="text-5xl font-bold text-white">
+            Mission <span className="text-cyan-400">3</span>
+          </h1>
+        </div>
+      </div>
+      
+      <div className="container mx-auto px-4 py-16">
+        <div className="max-w-4xl mx-auto space-y-12">
+          
+          <div className="bg-gray-800 border border-gray-700 rounded-xl p-8">
+            <h2 className="text-3xl font-bold text-cyan-400 mb-8">Présentation de la mission</h2>
+            
+            {/* Informations de base */}
+            <div className="mb-8">
+              <h3 className="text-2xl font-bold text-white mb-6">Informations générales</h3>
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div className="bg-gray-900/50 border border-gray-600 rounded-lg p-4">
+                  <h4 className="text-lg font-semibold text-cyan-400 mb-2">Organisation</h4>
+                  <p className="text-gray-300">{stageData.company}</p>
+                </div>
+                <div className="bg-gray-900/50 border border-gray-600 rounded-lg p-4">
+                  <h4 className="text-lg font-semibold text-cyan-400 mb-2">Période</h4>
+                  <p className="text-gray-300">{stageData.period}</p>
+                </div>
+                <div className="bg-gray-900/50 border border-gray-600 rounded-lg p-4">
+                  <h4 className="text-lg font-semibold text-cyan-400 mb-2">Poste/Mission</h4>
+                  <p className="text-gray-300">{stageData.position}</p>
+                </div>
+                <div className="bg-gray-900/50 border border-gray-600 rounded-lg p-4">
+                  <h4 className="text-lg font-semibold text-cyan-400 mb-2">Secteur</h4>
+                  <p className="text-gray-300">{stageData.sector}</p>
+                </div>
+              </div>
+              
+              <div className="bg-gray-900/50 border border-gray-600 rounded-lg p-6">
+                <h4 className="text-xl font-semibold text-cyan-400 mb-4">À propos de la mission</h4>
+                <p className="text-gray-300 leading-relaxed text-lg">
+                  {stageData.description}
+                </p>
+              </div>
+            </div>
+
+            {/* Section Photos de mission */}
+            <div className="mb-8">
+              <h3 className="text-2xl font-bold text-white mb-6">Environnement de mission</h3>
+              <div className="grid md:grid-cols-2 gap-6 max-w-2xl">
+                {stageData.images.slice(0, 2).map((image, index) => (
+                  <div key={index} className="space-y-2">
+                    <h4 className="text-sm font-medium text-cyan-400">
+                      {index === 0 ? "Logo/Identité" : "Lieu de mission"}
+                    </h4>
+                    <ClickableImage
+                      src={image}
+                      alt={index === 0 ? "Logo/Identité" : "Lieu de mission"}
+                      className="rounded-lg h-40 w-full object-cover border border-gray-600 hover:border-cyan-400 transition-colors"
+                    />
+                  </div>
+                ))}
+                {stageData.images.length < 2 && Array.from({length: 2 - stageData.images.length}).map((_, index) => (
+                  <div key={`placeholder-${index}`} className="space-y-2">
+                    <h4 className="text-sm font-medium text-cyan-400">
+                      {index === 0 ? "Logo/Identité" : "Lieu de mission"}
+                    </h4>
+                    <div className="bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-40 flex items-center justify-center hover:border-cyan-400 transition-colors">
+                      <span className="text-gray-400 text-xs text-center">
+                        {index === 0 ? "Logo/\nIdentité" : "Lieu de\nmission"}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-gray-800 border border-gray-700 rounded-xl p-8">
+            <h2 className="text-3xl font-bold text-cyan-400 mb-8">Missions réalisées</h2>
+            
+            {stageData.missions.map((mission, index) => (
+              <div key={index} className="mb-12 bg-gray-900/50 border border-gray-600 rounded-xl p-6">
+                <div className="flex items-center mb-6">
+                  <div className="w-3 h-3 bg-cyan-400 rounded-full mr-3"></div>
+                  <h3 className="text-2xl font-bold text-white">Mission {index + 1} - {mission.title}</h3>
+                </div>
+                
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div className="space-y-6">
+                    <div>
+                      <h4 className="text-lg font-semibold text-cyan-400 mb-3">Description détaillée</h4>
+                      <p className="text-gray-300 leading-relaxed text-base">
+                        {mission.description}
+                      </p>
+                    </div>
+                    
+                    {mission.skills && (
+                      <div className="space-y-3">
+                        <h4 className="text-lg font-semibold text-cyan-400">Compétences mobilisées :</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {mission.skills.map((skill, skillIndex) => (
+                            <span key={skillIndex} className="px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded-full text-sm border border-cyan-500/30">{skill}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {mission.points && (
+                      <div className="space-y-3">
+                        <h4 className="text-lg font-semibold text-cyan-400">Étapes clés de réalisation :</h4>
+                        <div className="space-y-3">
+                          {mission.points.map((point, pointIndex) => (
+                            <div key={pointIndex} className="flex items-start space-x-3 bg-gray-800/50 rounded-lg p-3">
+                              <div className="w-2 h-2 bg-cyan-400 rounded-full mt-2 flex-shrink-0"></div>
+                              <div>
+                                <span className="text-gray-300 text-sm leading-relaxed">{point}</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {mission.results && (
+                      <div className="space-y-3">
+                        <h4 className="text-lg font-semibold text-cyan-400">Impact et résultats :</h4>
+                        <div className="bg-gray-800 border border-gray-700 rounded-lg p-4">
+                          <div className="grid grid-cols-2 gap-6 text-center">
+                            <div className="space-y-2">
+                              <div className="text-3xl font-bold text-cyan-400">{mission.results.improvement}</div>
+                              <div className="text-gray-400 text-sm">Amélioration mesurée</div>
+                            </div>
+                            <div className="space-y-2">
+                              <div className="text-3xl font-bold text-cyan-400">{mission.results.projects}</div>
+                              <div className="text-gray-400 text-sm">Projets réalisés</div>
+                            </div>
+                          </div>
+                          <div className="mt-4 pt-4 border-t border-gray-600">
+                            <p className="text-gray-300 text-sm text-center">
+                              Cette mission a permis d'obtenir des résultats concrets et mesurables
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <h4 className="text-lg font-semibold text-cyan-400">Documentation visuelle :</h4>
+                    <div className="grid grid-cols-2 gap-3">
+                      {mission.images && mission.images.slice(0, 3).map((image, imgIndex) => (
+                        <ClickableImage
+                          key={imgIndex}
+                          src={image}
+                          alt={`Mission ${index + 1} - Photo ${imgIndex + 1}`}
+                          className={`rounded-lg h-32 object-cover border border-gray-600 w-full hover:border-cyan-400 transition-colors ${imgIndex === 2 ? 'col-span-2' : ''}`}
+                        />
+                      ))}
+                      {(!mission.images || mission.images.length < 3) && Array.from({length: 3 - (mission.images?.length || 0)}).map((_, imgIndex) => (
+                        <div key={`placeholder-${imgIndex}`} className={`bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-32 flex items-center justify-center hover:border-cyan-400 transition-colors ${imgIndex === 2 ? 'col-span-2' : ''}`}>
+                          <span className="text-gray-400 text-xs text-center">
+                            {imgIndex === 0 ? "Capture d'écran\nou schéma" : imgIndex === 1 ? "Résultat\nou livrable" : "Documentation\nou process"}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="bg-gray-800 border border-gray-700 rounded-xl p-8">
+            <h2 className="text-3xl font-bold text-cyan-400 mb-6">Bilan de la mission</h2>
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-xl font-semibold text-white mb-3">Compétences développées</h3>
+                <div className="flex flex-wrap gap-2">
+                  {stageData.skills.map((skill, index) => (
+                    <span key={index} className="px-4 py-2 bg-cyan-500/20 text-cyan-400 rounded-full text-sm border border-cyan-500/30">
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              
+              <div>
+                <h3 className="text-xl font-semibold text-white mb-3">Points clés de la mission</h3>
+                <p className="text-gray-300 leading-relaxed">
+                  Cette mission m'a permis de développer une expertise spécialisée et d'approfondir mes compétences 
+                  dans un domaine spécifique. L'expérience acquise durant cette mission représente une valeur ajoutée 
+                  significative pour mon profil professionnel.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-400/30 rounded-xl p-8 text-center">
+            <h2 className="text-3xl font-bold text-cyan-400 mb-4">
+              Mission accomplie avec succès
+            </h2>
+            <p className="text-gray-300 text-lg mb-6">
+              Cette mission spécialisée a enrichi mon parcours et consolidé mon expertise professionnelle.
+            </p>
+            <Link to="/about" className="inline-flex items-center px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-lg transition-colors duration-300">
+              Me contacter
+              <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const ConclusionPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800">
