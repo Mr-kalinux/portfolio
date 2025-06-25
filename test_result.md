@@ -330,7 +330,7 @@ frontend:
 
   - task: "Mission 3 display on Stage 1ère année page"
     implemented: true
-    working: false
+    working: true
     file: "/app/frontend/src/App.js"
     stuck_count: 0
     priority: "high"
@@ -339,6 +339,9 @@ frontend:
         - working: false
           agent: "testing"
           comment: "Identified issue with Mission 3 not displaying between Mission 2 and the Bilan section on the Stage 1ère année page. This is related to the StageForm component issue in the admin interface. The default data structure includes 4 missions, but due to the state management issue in the StageForm component, Mission 3 is not being displayed. The solution is to fix the StageForm component to properly maintain all missions after saving."
+        - working: true
+          agent: "testing"
+          comment: "Verified that all 4 missions are now correctly displayed on the Stage 1ère année page. Mission 3 is properly positioned between Mission 2 and Mission 4. The StageForm component has been fixed to properly maintain all missions after saving, with the addition of the hasChanges state variable and proper useEffect hook to handle state updates when the data prop changes."
 
 metadata:
   created_by: "main_agent"
