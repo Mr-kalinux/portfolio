@@ -350,7 +350,7 @@ const StagePremiereAnnee = () => {
       const response = await axios.get(`${API_URL}/api/stages/stage1`);
       const data = response.data;
       
-      // S'assurer qu'il y a toujours 4 missions
+      // S'assurer qu'il y a toujours 3 missions
       const defaultMissions = [
         {
           title: "[Titre de votre mission]",
@@ -366,23 +366,19 @@ const StagePremiereAnnee = () => {
         },
         {
           title: "[Titre de votre mission]",
-          description: "[Présentez votre troisième mission principale. Soulignez l'impact de cette mission sur votre développement professionnel et les résultats concrets que vous avez obtenus.]",
-          results: { improvement: "XX%", projects: "XX" },
-          images: []
-        },
-        {
-          title: "[Titre de votre mission]",
-          description: "[Décrivez ici votre quatrième mission ou mission spécialisée. Mettez en avant les aspects innovants, les défis techniques ou les compétences avancées développées dans cette mission.]",
-          achievements: ["Réalisation 1", "Réalisation 2", "Réalisation 3"],
+          description: "[Présentez votre troisième mission principale. Développez vos nouvelles compétences acquises et l'évolution de votre expertise professionnelle.]",
+          skills: ["Compétence avancée 1", "Compétence avancée 2", "Compétence avancée 3"],
           images: []
         }
       ];
       
       // Compléter avec les missions par défaut si nécessaire
       const missions = [...(data.missions || [])];
-      while (missions.length < 4) {
+      while (missions.length < 3) {
         missions.push(defaultMissions[missions.length]);
       }
+      // Limiter à 3 missions maximum
+      missions.splice(3);
       
       setStageData({
         ...data,
