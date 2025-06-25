@@ -214,7 +214,7 @@ const HomePage = () => {
           </p>
           
           {/* Navigation Buttons */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             <Link to="/stage-premiere-annee" className="group">
               <div className="bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-cyan-400 rounded-xl p-8 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-cyan-400/20">
                 <div className="text-cyan-400 text-4xl mb-4 group-hover:scale-110 transition-transform">🎓</div>
@@ -228,14 +228,6 @@ const HomePage = () => {
                 <div className="text-cyan-400 text-4xl mb-4 group-hover:scale-110 transition-transform">💼</div>
                 <h3 className="text-2xl font-bold text-white mb-3">Stage 2ème Année</h3>
                 <p className="text-gray-400">Mon évolution professionnelle</p>
-              </div>
-            </Link>
-            
-            <Link to="/mission-3" className="group">
-              <div className="bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-cyan-400 rounded-xl p-8 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-cyan-400/20">
-                <div className="text-cyan-400 text-4xl mb-4 group-hover:scale-110 transition-transform">🚀</div>
-                <h3 className="text-2xl font-bold text-white mb-3">Mission 3</h3>
-                <p className="text-gray-400">Mission spécialisée</p>
               </div>
             </Link>
             
