@@ -1575,6 +1575,8 @@ const StageForm = ({ data, stageType, title, onSave, onImageUpload, saving }) =>
   });
 
   const [hasChanges, setHasChanges] = useState(false);
+
+  const [hasChanges, setHasChanges] = useState(false);
   
   const [hasChanges, setHasChanges] = useState(false);
 
