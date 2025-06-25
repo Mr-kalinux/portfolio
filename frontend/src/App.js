@@ -1436,7 +1436,7 @@ const PersonalInfoForm = ({ data, onSave, onImageUpload, saving }) => {
     }
   };
 
-  const handleSaveStage = () => {
+  const handleSavePersonal = () => {
     onSave(formData);
     setHasChanges(false);
   };
