@@ -1366,7 +1366,7 @@ const AdminDashboard = () => {
           
           {activeTab === 'conclusion' && (
             <ConclusionForm 
-              data={content?.sections?.find(s => s.section_id === 'conclusion') || {}} 
+              data={Array.isArray(content?.sections) ? content.sections.find(s => s.section_id === 'conclusion') || {} : {}} 
               onSave={(data) => handleSave('conclusion', data)}
               saving={saving}
             />
