@@ -315,7 +315,7 @@ frontend:
         
   - task: "Admin interface save functionality"
     implemented: true
-    working: false
+    working: true
     file: "/app/frontend/src/App.js"
     stuck_count: 1
     priority: "high"
@@ -324,6 +324,9 @@ frontend:
         - working: false
           agent: "testing"
           comment: "Identified issue with save functionality in the admin interface. The StageForm component doesn't update its state when the data prop changes after saving, causing the form to reset to default values. The PersonalInfoForm component has a useEffect hook to handle this, but StageForm is missing it."
+        - working: true
+          agent: "testing"
+          comment: "Fixed the StageForm component by adding a hasChanges state variable and updating the useEffect hook to properly handle state updates when the data prop changes. Also updated the handleChange, handleMissionChange, and handleImageUpload functions to set hasChanges to true, and added a handleSave function to reset hasChanges after saving."
 
   - task: "Mission 3 display on Stage 1ère année page"
     implemented: true
