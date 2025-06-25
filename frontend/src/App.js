@@ -1660,9 +1660,15 @@ const StageForm = ({ data, stageType, title, onSave, onImageUpload, saving }) =>
           newMissionImages.push(imageData);
           newMissions[index].images = newMissionImages;
           setFormData(prev => ({ ...prev, missions: newMissions }));
+          setHasChanges(true);
         }
       }
     }
+  };
+  
+  const handleSave = () => {
+    onSave(formData);
+    setHasChanges(false);
   };
 
   return (
