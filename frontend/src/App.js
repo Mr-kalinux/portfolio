@@ -1573,6 +1573,8 @@ const StageForm = ({ data, stageType, title, onSave, onImageUpload, saving }) =>
     achievements: data.achievements || [],
     images: data.images || []
   });
+
+  const [hasChanges, setHasChanges] = useState(false);
   
   const [hasChanges, setHasChanges] = useState(false);
 
