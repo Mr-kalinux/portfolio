@@ -1608,6 +1608,8 @@ const StageForm = ({ data, stageType, title, onSave, onImageUpload, saving }) =>
     achievements: data.achievements || [],
     images: data.images || []
   });
+  
+  const [hasChanges, setHasChanges] = useState(false);
 
   // Update form data when props change (after saving)
   useEffect(() => {
