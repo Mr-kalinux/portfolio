@@ -348,7 +348,46 @@ const StagePremiereAnnee = () => {
   const fetchStageData = async () => {
     try {
       const response = await axios.get(`${API_URL}/api/stages/stage1`);
-      setStageData(response.data);
+      const data = response.data;
+      
+      // S'assurer qu'il y a toujours 4 missions
+      const defaultMissions = [
+        {
+          title: "[Titre de votre mission]",
+          description: "[Décrivez ici votre première mission principale. Expliquez le contexte, vos responsabilités, les défis rencontrés et les résultats obtenus. Cette section peut contenir plusieurs paragraphes pour détailler votre expérience.]",
+          skills: ["Compétence 1", "Compétence 2", "Compétence 3"],
+          images: []
+        },
+        {
+          title: "[Titre de votre mission]",
+          description: "[Décrivez ici votre deuxième mission principale. Mettez l'accent sur l'évolution par rapport à la première mission, les nouvelles responsabilités et les apprentissages spécifiques à cette mission.]",
+          points: ["Point important 1", "Point important 2", "Point important 3"],
+          images: []
+        },
+        {
+          title: "[Titre de votre mission]",
+          description: "[Présentez votre troisième mission principale. Soulignez l'impact de cette mission sur votre développement professionnel et les résultats concrets que vous avez obtenus.]",
+          results: { improvement: "XX%", projects: "XX" },
+          images: []
+        },
+        {
+          title: "[Titre de votre mission]",
+          description: "[Décrivez ici votre quatrième mission ou mission spécialisée. Mettez en avant les aspects innovants, les défis techniques ou les compétences avancées développées dans cette mission.]",
+          achievements: ["Réalisation 1", "Réalisation 2", "Réalisation 3"],
+          images: []
+        }
+      ];
+      
+      // Compléter avec les missions par défaut si nécessaire
+      const missions = [...(data.missions || [])];
+      while (missions.length < 4) {
+        missions.push(defaultMissions[missions.length]);
+      }
+      
+      setStageData({
+        ...data,
+        missions: missions
+      });
     } catch (error) {
       console.error('Error fetching stage data:', error);
       // Set default data if API fails
