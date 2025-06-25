@@ -1195,7 +1195,7 @@ const AdminDashboard = () => {
       let endpoint = '';
       if (section === 'personal') {
         endpoint = '/api/admin/personal-info';
-      } else if (section.startsWith('stage')) {
+      } else if (section.startsWith('stage') || section === 'mission3') {
         endpoint = '/api/admin/stages';
       } else {
         endpoint = `/api/admin/content/${section}`;
