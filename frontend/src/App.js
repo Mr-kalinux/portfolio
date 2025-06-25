@@ -1355,7 +1355,7 @@ const AdminDashboard = () => {
           
           {activeTab === 'stage2' && (
             <StageForm 
-              data={content?.stages?.find(s => s.stage_type === 'stage2') || {}} 
+              data={Array.isArray(content?.stages) ? content.stages.find(s => s.stage_type === 'stage2') || {} : {}} 
               stageType="stage2"
               title="Stage 2ème année"
               onSave={(data) => handleSave('stages', data)} 
