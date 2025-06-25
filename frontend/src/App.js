@@ -377,6 +377,12 @@ const StagePremiereAnnee = () => {
             description: "[Présentez votre troisième mission principale. Soulignez l'impact de cette mission sur votre développement professionnel et les résultats concrets que vous avez obtenus.]",
             results: { improvement: "XX%", projects: "XX" },
             images: []
+          },
+          {
+            title: "[Titre de votre mission]",
+            description: "[Décrivez ici votre quatrième mission ou mission spécialisée. Mettez en avant les aspects innovants, les défis techniques ou les compétences avancées développées dans cette mission.]",
+            achievements: ["Réalisation 1", "Réalisation 2", "Réalisation 3"],
+            images: []
           }
         ],
         skills: ["Compétence technique 1", "Compétence technique 2", "Compétence technique 3"],
