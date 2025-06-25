@@ -1576,10 +1576,6 @@ const StageForm = ({ data, stageType, title, onSave, onImageUpload, saving }) =>
 
   const [hasChanges, setHasChanges] = useState(false);
 
-  const [hasChanges, setHasChanges] = useState(false);
-  
-  const [hasChanges, setHasChanges] = useState(false);
-
   // Update form data when props change (after saving) - but only if no changes are pending
   useEffect(() => {
     // Only update if there are no unsaved changes
