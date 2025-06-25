@@ -1366,8 +1366,8 @@ const AdminDashboard = () => {
           
           {activeTab === 'conclusion' && (
             <ConclusionForm 
-              data={Array.isArray(content?.sections) ? content.sections.find(s => s.section_id === 'conclusion') || {} : {}} 
-              onSave={(data) => handleSave('conclusion', data)}
+              data={content?.conclusion || {}} 
+              onSave={(data) => handleSave('conclusion', data)} 
               saving={saving}
             />
           )}
@@ -1388,42 +1388,33 @@ const PersonalInfoForm = ({ data, onSave, onImageUpload, saving }) => {
     skills: data.skills || [],
     profile_image: data.profile_image || ''
   });
-
+  
   const [hasChanges, setHasChanges] = useState(false);
-
+  
+  // Update form data when props change (after saving)
   useEffect(() => {
-    setFormData({
-      name: data.name || '',
-      email: data.email || '',
-      phone: data.phone || '',
-      linkedin: data.linkedin || '',
-      description: data.description || '',
-      skills: data.skills || [],
-      profile_image: data.profile_image || ''
-    });
-    setHasChanges(false);
-  }, [data]);
+    // Only update if there are no unsaved changes
+    if (!hasChanges) {
+      setFormData({
+        name: data.name || '',
+        email: data.email || '',
+        phone: data.phone || '',
+        linkedin: data.linkedin || '',
+        description: data.description || '',
+        skills: data.skills || [],
+        profile_image: data.profile_image || ''
+      });
+    }
+  }, [data, hasChanges]);
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     setHasChanges(true);
   };
 
-  const handleSkillChange = (index, value) => {
-    const newSkills = [...formData.skills];
-    newSkills[index] = value;
-    setFormData(prev => ({ ...prev, skills: newSkills }));
-    setHasChanges(true);
-  };
-
-  const addSkill = () => {
-    setFormData(prev => ({ ...prev, skills: [...prev.skills, ''] }));
-    setHasChanges(true);
-  };
-
-  const removeSkill = (index) => {
-    setFormData(prev => ({ ...prev, skills: prev.skills.filter((_, i) => i !== index) }));
-    setHasChanges(true);
+  const handleSkillsChange = (skillsString) => {
+    const skills = skillsString.split(',').map(skill => skill.trim()).filter(skill => skill);
+    handleChange('skills', skills);
   };
 
   const handleImageUpload = async (e) => {
@@ -1435,7 +1426,7 @@ const PersonalInfoForm = ({ data, onSave, onImageUpload, saving }) => {
       }
     }
   };
-
+  
   const handleSavePersonal = () => {
     onSave(formData);
     setHasChanges(false);
@@ -1499,53 +1490,33 @@ const PersonalInfoForm = ({ data, onSave, onImageUpload, saving }) => {
         </div>
         
         <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">Compétences (séparées par des virgules)</label>
+          <input
+            type="text"
+            value={formData.skills.join(', ')}
+            onChange={(e) => handleSkillsChange(e.target.value)}
+            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+          />
+        </div>
+        
+        <div>
           <label className="block text-sm font-medium text-gray-300 mb-2">Photo de profil</label>
           <div className="flex items-center space-x-4">
             <input
               type="file"
               accept="image/*"
               onChange={handleImageUpload}
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
+              className="px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:bg-cyan-600 file:text-white hover:file:bg-cyan-500"
             />
             {formData.profile_image && (
-              <img src={formData.profile_image} alt="Profile" className="w-16 h-16 object-cover rounded-full" />
+              <img src={formData.profile_image} alt="Profile" className="h-16 w-16 object-cover rounded-full border border-gray-600" />
             )}
-          </div>
-        </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">Compétences</label>
-          <div className="space-y-2">
-            {formData.skills.map((skill, index) => (
-              <div key={index} className="flex items-center space-x-2">
-                <input
-                  type="text"
-                  value={skill}
-                  onChange={(e) => handleSkillChange(index, e.target.value)}
-                  className="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
-                />
-                <button
-                  onClick={() => removeSkill(index)}
-                  className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-500 transition-colors"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-            ))}
-            <button
-              onClick={addSkill}
-              className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-500 transition-colors"
-            >
-              Ajouter une compétence
-            </button>
           </div>
         </div>
       </div>
       
       <button
-        onClick={handleSaveStage}
+        onClick={handleSavePersonal}
         disabled={saving}
         className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-500 transition-colors disabled:opacity-50"
       >
@@ -1998,7 +1969,6 @@ const ConclusionForm = ({ data, onSave, saving }) => {
             onChange={(e) => handleChange('content', e.target.value)}
             rows={10}
             className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-cyan-400"
-            placeholder="Écrivez votre conclusion ici..."
           />
         </div>
       </div>
@@ -2017,8 +1987,8 @@ const ConclusionForm = ({ data, onSave, saving }) => {
 // Main App Component
 function App() {
   return (
-    <AdminProvider>
-      <Router>
+    <Router>
+      <AdminProvider>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<AboutPage />} />
@@ -2027,12 +1997,12 @@ function App() {
           <Route path="/conclusion" element={<ConclusionPage />} />
           <Route path="/admin" element={<AdminRoute />} />
         </Routes>
-      </Router>
-    </AdminProvider>
+      </AdminProvider>
+    </Router>
   );
 }
 
-// Admin Route with Authentication
+// Protected Admin Route
 const AdminRoute = () => {
   const { isAdminAuthenticated } = useAdmin();
   
