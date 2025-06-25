@@ -1594,14 +1594,6 @@ const AdminDashboard = () => {
                 Stage 2ème année
               </button>
               <button
-                onClick={() => setActiveTab('mission3')}
-                className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
-                  activeTab === 'mission3' ? 'bg-cyan-600 text-white' : 'text-gray-300 hover:bg-gray-700'
-                }`}
-              >
-                Mission 3
-              </button>
-              <button
                 onClick={() => setActiveTab('conclusion')}
                 className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
                   activeTab === 'conclusion' ? 'bg-cyan-600 text-white' : 'text-gray-300 hover:bg-gray-700'
