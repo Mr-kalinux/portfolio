@@ -1632,7 +1632,7 @@ const StageForm = ({ data, stageType, title, onSave, onImageUpload, saving }) =>
     }
   };
   
-  const handleSave = () => {
+  const handleSavePersonal = () => {
     onSave(formData);
     setHasChanges(false);
   };
