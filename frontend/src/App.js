@@ -1635,16 +1635,6 @@ const AdminDashboard = () => {
               saving={saving}
             />
           )}
-          {activeTab === 'mission3' && (
-            <StageForm 
-              data={content?.stages?.mission3 || {}} 
-              stageType="mission3"
-              title="Mission 3"
-              onSave={(data) => handleSave('mission3', data)}
-              onImageUpload={handleImageUpload}
-              saving={saving}
-            />
-          )}
           {activeTab === 'conclusion' && (
             <ConclusionForm 
               data={content?.sections?.conclusion || {}} 
