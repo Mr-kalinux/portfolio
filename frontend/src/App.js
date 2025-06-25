@@ -2001,7 +2001,10 @@ const ConclusionForm = ({ data, onSave, saving }) => {
       </div>
       
       <button
-        onClick={() => onSave(formData)}
+        onClick={() => {
+          onSave(formData);
+          setHasChanges(false);
+        }}
         disabled={saving}
         className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-500 transition-colors disabled:opacity-50"
       >
