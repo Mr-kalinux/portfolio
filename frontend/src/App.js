@@ -689,45 +689,6 @@ const StagePremiereAnnee = () => {
                       </div>
                     )}
                     
-                    {mission.results && (
-                      <div className="space-y-3">
-                        <h4 className="text-lg font-semibold text-cyan-400">Impact et résultats :</h4>
-                        <div className="bg-gray-800 border border-gray-700 rounded-lg p-4">
-                          <div className="grid grid-cols-2 gap-6 text-center">
-                            <div className="space-y-2">
-                              <div className="text-3xl font-bold text-cyan-400">{mission.results.improvement}</div>
-                              <div className="text-gray-400 text-sm">Amélioration mesurée</div>
-                            </div>
-                            <div className="space-y-2">
-                              <div className="text-3xl font-bold text-cyan-400">{mission.results.projects}</div>
-                              <div className="text-gray-400 text-sm">Projets réalisés</div>
-                            </div>
-                          </div>
-                          <div className="mt-4 pt-4 border-t border-gray-600">
-                            <p className="text-gray-300 text-sm text-center">
-                              Cette mission a permis d'obtenir des résultats concrets et mesurables
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {mission.achievements && (
-                      <div className="space-y-3">
-                        <h4 className="text-lg font-semibold text-cyan-400">Réalisations principales :</h4>
-                        <div className="space-y-3">
-                          {mission.achievements.map((achievement, achievementIndex) => (
-                            <div key={achievementIndex} className="flex items-start space-x-3 bg-gray-800/50 rounded-lg p-3">
-                              <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
-                              <div>
-                                <span className="text-gray-300 text-sm leading-relaxed">{achievement}</span>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
                     {/* Ajout d'une section apprentissages */}
                     <div className="space-y-3">
                       <h4 className="text-lg font-semibold text-cyan-400">Apprentissages clés :</h4>
