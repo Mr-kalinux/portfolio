@@ -371,9 +371,7 @@ test_plan:
   current_focus:
     - "Admin interface save functionality"
     - "Mission 3 display on Stage 1ère année page"
-  stuck_tasks:
-    - "Admin interface save functionality"
-    - "Mission 3 display on Stage 1ère année page"
+  stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 
