@@ -1627,8 +1627,7 @@ const StageForm = ({ data, stageType, title, onSave, onImageUpload, saving }) =>
       missions: data.missions || [
         { title: '', description: '', skills: [], images: [] },
         { title: '', description: '', points: [], images: [] },
-        { title: '', description: '', results: { improvement: '', projects: '' }, images: [] },
-        { title: '', description: '', achievements: [], images: [] }
+        { title: '', description: '', skills: [], images: [] }
       ],
       skills: data.skills || [],
       achievements: data.achievements || [],
