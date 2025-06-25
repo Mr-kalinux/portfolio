@@ -325,6 +325,18 @@ frontend:
           agent: "testing"
           comment: "Identified issue with save functionality in the admin interface. The StageForm component doesn't update its state when the data prop changes after saving, causing the form to reset to default values. The PersonalInfoForm component has a useEffect hook to handle this, but StageForm is missing it."
 
+  - task: "Mission 3 display on Stage 1ère année page"
+    implemented: true
+    working: false
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "Identified issue with Mission 3 not displaying between Mission 2 and the Bilan section on the Stage 1ère année page. This is related to the StageForm component issue in the admin interface. The default data structure includes 4 missions, but due to the state management issue in the StageForm component, Mission 3 is not being displayed. The solution is to fix the StageForm component to properly maintain all missions after saving."
+
 metadata:
   created_by: "main_agent"
   version: "1.0"
