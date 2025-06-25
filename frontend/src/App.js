@@ -1576,26 +1576,28 @@ const StageForm = ({ data, stageType, title, onSave, onImageUpload, saving }) =>
   
   const [hasChanges, setHasChanges] = useState(false);
 
-  // Update form data when props change (after saving)
+  // Update form data when props change (after saving) - but only if no changes are pending
   useEffect(() => {
-    setFormData({
-      stage_type: stageType,
-      company: data.company || '',
-      position: data.position || '',
-      period: data.period || '',
-      sector: data.sector || '',
-      description: data.description || '',
-      missions: data.missions || [
-        { title: '', description: '', skills: [], images: [] },
-        { title: '', description: '', points: [], images: [] },
-        { title: '', description: '', skills: [], images: [] }
-      ],
-      skills: data.skills || [],
-      achievements: data.achievements || [],
-      images: data.images || []
-    });
-    setHasChanges(false);
-  }, [data, stageType]);
+    // Only update if there are no unsaved changes
+    if (!hasChanges) {
+      setFormData({
+        stage_type: stageType,
+        company: data.company || '',
+        position: data.position || '',
+        period: data.period || '',
+        sector: data.sector || '',
+        description: data.description || '',
+        missions: data.missions || [
+          { title: '', description: '', skills: [], images: [] },
+          { title: '', description: '', points: [], images: [] },
+          { title: '', description: '', skills: [], images: [] }
+        ],
+        skills: data.skills || [],
+        achievements: data.achievements || [],
+        images: data.images || []
+      });
+    }
+  }, [data, stageType, hasChanges]);
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
