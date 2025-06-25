@@ -2050,6 +2050,7 @@ function App() {
             <Route path="/about" element={<AboutPage />} />
             <Route path="/stage-premiere-annee" element={<StagePremiereAnnee />} />
             <Route path="/stage-deuxieme-annee" element={<StageDeuxiemeAnnee />} />
+            <Route path="/mission-3" element={<Mission3Page />} />
             <Route path="/conclusion" element={<ConclusionPage />} />
             <Route path="/admin" element={<AdminRoute />} />
           </Routes>
