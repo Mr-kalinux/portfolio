@@ -1586,6 +1586,26 @@ const StageForm = ({ data, stageType, title, onSave, onImageUpload, saving }) =>
     images: data.images || []
   });
 
+  // Update form data when props change (after saving)
+  useEffect(() => {
+    setFormData({
+      stage_type: stageType,
+      company: data.company || '',
+      position: data.position || '',
+      period: data.period || '',
+      sector: data.sector || '',
+      description: data.description || '',
+      missions: data.missions || [
+        { title: '', description: '', skills: [], images: [] },
+        { title: '', description: '', points: [], images: [] },
+        { title: '', description: '', results: { improvement: '', projects: '' }, images: [] }
+      ],
+      skills: data.skills || [],
+      achievements: data.achievements || [],
+      images: data.images || []
+    });
+  }, [data, stageType]);
+
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
