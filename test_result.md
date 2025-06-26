@@ -402,7 +402,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Image functionality for Stage 1ère année page"
+    - "Adaptive container sizing for images"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
