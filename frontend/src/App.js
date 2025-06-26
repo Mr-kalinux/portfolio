@@ -312,11 +312,50 @@ const EditableText = React.memo(({ value, onSave, className, placeholder, multil
   );
 });
 
-// EditableImage component for inline image editing
+// EditableImage component for inline image editing with auto-resize
 const EditableImage = React.memo(({ src, alt, className, onSave, placeholder = "Cliquez pour ajouter une image" }) => {
   const { isEditMode } = useAdmin();
   const [isUploading, setIsUploading] = useState(false);
+  const [isResizing, setIsResizing] = useState(false);
   const fileInputRef = useRef(null);
+  const canvasRef = useRef(null);
+
+  const resizeImage = useCallback((file, maxWidth = 800, maxHeight = 600, quality = 0.8) => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Calculate new dimensions
+        let { width, height } = img;
+        
+        if (width > height) {
+          if (width > maxWidth) {
+            height = (height * maxWidth) / width;
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width = (width * maxHeight) / height;
+            height = maxHeight;
+          }
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        // Draw and compress
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        canvas.toBlob((blob) => {
+          resolve(blob);
+        }, 'image/jpeg', quality);
+      };
+      
+      img.src = URL.createObjectURL(file);
+    });
+  }, []);
 
   const handleImageClick = useCallback(() => {
     if (isEditMode && fileInputRef.current) {
@@ -333,35 +372,33 @@ const EditableImage = React.memo(({ src, alt, className, onSave, placeholder = "
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) { // 5MB limit
-      alert('L\'image ne doit pas dépasser 5MB');
-      return;
-    }
-
     setIsUploading(true);
+    setIsResizing(true);
+
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const response = await axios.post(`${API_URL}/api/admin/upload-image`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      if (response.data.success) {
-        const success = await onSave(response.data.image_url);
+      // Resize the image
+      const resizedBlob = await resizeImage(file);
+      
+      // Convert to base64
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        const base64String = event.target.result;
+        setIsResizing(false);
+        
+        const success = await onSave(base64String);
         if (!success) {
           alert('Erreur lors de la sauvegarde de l\'image');
         }
-      }
+      };
+      reader.readAsDataURL(resizedBlob);
     } catch (error) {
-      console.error('Error uploading image:', error);
-      alert('Erreur lors de l\'upload de l\'image');
+      console.error('Error processing image:', error);
+      alert('Erreur lors du traitement de l\'image');
+      setIsResizing(false);
     } finally {
       setIsUploading(false);
     }
-  }, [onSave]);
+  }, [onSave, resizeImage]);
 
   if (!isEditMode) {
     if (!src) {
@@ -375,7 +412,7 @@ const EditableImage = React.memo(({ src, alt, className, onSave, placeholder = "
   }
 
   return (
-    <div className="relative">
+    <div className="relative group">
       <input
         ref={fileInputRef}
         type="file"
@@ -386,7 +423,7 @@ const EditableImage = React.memo(({ src, alt, className, onSave, placeholder = "
       
       <div
         onClick={handleImageClick}
-        className={`${className} cursor-pointer border-2 border-dashed border-transparent hover:border-cyan-400 transition-colors relative overflow-hidden rounded-lg`}
+        className={`${className} cursor-pointer border-2 border-dashed border-transparent hover:border-cyan-400 transition-colors relative overflow-hidden rounded-lg group-hover:shadow-lg`}
         title="Cliquez pour changer l'image"
       >
         {src ? (
@@ -397,18 +434,40 @@ const EditableImage = React.memo(({ src, alt, className, onSave, placeholder = "
           </div>
         )}
         
-        {isUploading && (
-          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <div className="text-white text-sm">Upload en cours...</div>
+        {(isUploading || isResizing) && (
+          <div className="absolute inset-0 bg-black bg-opacity-70 flex flex-col items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-400 mb-2"></div>
+            <div className="text-white text-sm">
+              {isResizing ? 'Redimensionnement...' : 'Upload en cours...'}
+            </div>
           </div>
         )}
         
-        <div className="absolute inset-0 bg-cyan-500 bg-opacity-0 hover:bg-opacity-20 transition-all duration-200 flex items-center justify-center">
-          <svg className="w-8 h-8 text-white opacity-0 hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
+        <div className="absolute inset-0 bg-cyan-500 bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200 flex items-center justify-center">
+          <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black bg-opacity-50 rounded-full p-3">
+            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
         </div>
       </div>
+      
+      {src && isEditMode && (
+        <div className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onSave('');
+            }}
+            className="bg-red-500 hover:bg-red-600 text-white rounded-full p-1 shadow-lg transition-colors"
+            title="Supprimer l'image"
+          >
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      )}
     </div>
   );
 });
