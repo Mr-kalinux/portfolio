@@ -312,50 +312,70 @@ const EditableText = React.memo(({ value, onSave, className, placeholder, multil
   );
 });
 
-// EditableImage component for inline image editing with auto-resize
-const EditableImage = React.memo(({ src, alt, className, onSave, placeholder = "Cliquez pour ajouter une image" }) => {
+// EditableImage component with adaptive container sizing
+const EditableImage = React.memo(({ src, alt, className, onSave, placeholder = "Cliquez pour ajouter une image", maxWidth = 400, maxHeight = 300 }) => {
   const { isEditMode } = useAdmin();
   const [isUploading, setIsUploading] = useState(false);
-  const [isResizing, setIsResizing] = useState(false);
+  const [imageDimensions, setImageDimensions] = useState(null);
+  const [adaptiveClassName, setAdaptiveClassName] = useState(className);
   const fileInputRef = useRef(null);
-  const canvasRef = useRef(null);
 
-  const resizeImage = useCallback((file, maxWidth = 800, maxHeight = 600, quality = 0.8) => {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        
-        // Calculate new dimensions
-        let { width, height } = img;
-        
-        if (width > height) {
-          if (width > maxWidth) {
-            height = (height * maxWidth) / width;
-            width = maxWidth;
-          }
-        } else {
-          if (height > maxHeight) {
-            width = (width * maxHeight) / height;
-            height = maxHeight;
-          }
-        }
-        
-        canvas.width = width;
-        canvas.height = height;
-        
-        // Draw and compress
-        ctx.drawImage(img, 0, 0, width, height);
-        
-        canvas.toBlob((blob) => {
-          resolve(blob);
-        }, 'image/jpeg', quality);
-      };
+  const calculateAdaptiveSize = useCallback((imgWidth, imgHeight) => {
+    // Calculate the aspect ratio
+    const aspectRatio = imgWidth / imgHeight;
+    
+    // Determine if it's landscape, portrait, or square
+    let newWidth, newHeight;
+    
+    if (aspectRatio > 1) {
+      // Landscape - limit by width
+      newWidth = Math.min(imgWidth, maxWidth);
+      newHeight = newWidth / aspectRatio;
+    } else {
+      // Portrait or square - limit by height
+      newHeight = Math.min(imgHeight, maxHeight);
+      newWidth = newHeight * aspectRatio;
+    }
+    
+    // Ensure minimum size
+    const minSize = 80;
+    if (newWidth < minSize) {
+      newWidth = minSize;
+      newHeight = minSize / aspectRatio;
+    }
+    if (newHeight < minSize) {
+      newHeight = minSize;
+      newWidth = minSize * aspectRatio;
+    }
+    
+    return {
+      width: Math.round(newWidth),
+      height: Math.round(newHeight),
+      aspectRatio
+    };
+  }, [maxWidth, maxHeight]);
+
+  const handleImageLoad = useCallback((imageUrl) => {
+    const img = new Image();
+    img.onload = () => {
+      const dimensions = calculateAdaptiveSize(img.width, img.height);
+      setImageDimensions(dimensions);
       
-      img.src = URL.createObjectURL(file);
-    });
-  }, []);
+      // Create adaptive className with calculated dimensions
+      const baseClasses = className.replace(/h-\d+|w-\d+|h-full|w-full/g, '').trim();
+      setAdaptiveClassName(`${baseClasses}`);
+    };
+    img.src = imageUrl;
+  }, [calculateAdaptiveSize, className]);
+
+  useEffect(() => {
+    if (src) {
+      handleImageLoad(src);
+    } else {
+      setImageDimensions(null);
+      setAdaptiveClassName(className);
+    }
+  }, [src, handleImageLoad, className]);
 
   const handleImageClick = useCallback(() => {
     if (isEditMode && fileInputRef.current) {
@@ -373,32 +393,29 @@ const EditableImage = React.memo(({ src, alt, className, onSave, placeholder = "
     }
 
     setIsUploading(true);
-    setIsResizing(true);
 
     try {
-      // Resize the image
-      const resizedBlob = await resizeImage(file);
-      
-      // Convert to base64
+      // Convert to base64 without resizing
       const reader = new FileReader();
       reader.onload = async (event) => {
         const base64String = event.target.result;
-        setIsResizing(false);
         
         const success = await onSave(base64String);
-        if (!success) {
+        if (success) {
+          // The useEffect will handle dimension calculation
+          handleImageLoad(base64String);
+        } else {
           alert('Erreur lors de la sauvegarde de l\'image');
         }
       };
-      reader.readAsDataURL(resizedBlob);
+      reader.readAsDataURL(file);
     } catch (error) {
       console.error('Error processing image:', error);
       alert('Erreur lors du traitement de l\'image');
-      setIsResizing(false);
     } finally {
       setIsUploading(false);
     }
-  }, [onSave, resizeImage]);
+  }, [onSave, handleImageLoad]);
 
   if (!isEditMode) {
     if (!src) {
@@ -408,11 +425,34 @@ const EditableImage = React.memo(({ src, alt, className, onSave, placeholder = "
         </div>
       );
     }
-    return <ClickableImage src={src} alt={alt} className={className} />;
+    
+    // Use adaptive dimensions for display
+    const containerStyle = imageDimensions 
+      ? {
+          width: `${imageDimensions.width}px`,
+          height: `${imageDimensions.height}px`,
+          maxWidth: '100%'
+        }
+      : {};
+    
+    return (
+      <div style={containerStyle} className="relative overflow-hidden rounded-lg">
+        <ClickableImage src={src} alt={alt} className="w-full h-full object-cover" />
+      </div>
+    );
   }
 
+  // Adaptive container style for edit mode
+  const containerStyle = imageDimensions 
+    ? {
+        width: `${imageDimensions.width}px`,
+        height: `${imageDimensions.height}px`,
+        maxWidth: '100%'
+      }
+    : {};
+
   return (
-    <div className="relative group">
+    <div className="relative group" style={!src ? {} : containerStyle}>
       <input
         ref={fileInputRef}
         type="file"
@@ -423,23 +463,21 @@ const EditableImage = React.memo(({ src, alt, className, onSave, placeholder = "
       
       <div
         onClick={handleImageClick}
-        className={`${className} cursor-pointer border-2 border-dashed border-transparent hover:border-cyan-400 transition-colors relative overflow-hidden rounded-lg group-hover:shadow-lg`}
+        className={`${!src ? adaptiveClassName : 'w-full h-full'} cursor-pointer border-2 border-dashed border-transparent hover:border-cyan-400 transition-colors relative overflow-hidden rounded-lg group-hover:shadow-lg`}
         title="Cliquez pour changer l'image"
       >
         {src ? (
           <img src={src} alt={alt} className="w-full h-full object-cover" />
         ) : (
-          <div className="bg-gray-700 w-full h-full flex items-center justify-center">
+          <div className="bg-gray-700 w-full h-full flex items-center justify-center min-h-[80px] min-w-[80px]">
             <span className="text-gray-400 text-xs text-center">{placeholder}</span>
           </div>
         )}
         
-        {(isUploading || isResizing) && (
+        {isUploading && (
           <div className="absolute inset-0 bg-black bg-opacity-70 flex flex-col items-center justify-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-400 mb-2"></div>
-            <div className="text-white text-sm">
-              {isResizing ? 'Redimensionnement...' : 'Upload en cours...'}
-            </div>
+            <div className="text-white text-sm">Upload en cours...</div>
           </div>
         )}
         
@@ -453,11 +491,13 @@ const EditableImage = React.memo(({ src, alt, className, onSave, placeholder = "
       </div>
       
       {src && isEditMode && (
-        <div className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
           <button
             onClick={(e) => {
               e.stopPropagation();
               onSave('');
+              setImageDimensions(null);
+              setAdaptiveClassName(className);
             }}
             className="bg-red-500 hover:bg-red-600 text-white rounded-full p-1 shadow-lg transition-colors"
             title="Supprimer l'image"
@@ -466,6 +506,12 @@ const EditableImage = React.memo(({ src, alt, className, onSave, placeholder = "
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
+        </div>
+      )}
+      
+      {src && imageDimensions && isEditMode && (
+        <div className="absolute -bottom-6 left-0 text-xs text-gray-400 bg-black bg-opacity-50 px-2 py-1 rounded">
+          {imageDimensions.width}x{imageDimensions.height}px
         </div>
       )}
     </div>
