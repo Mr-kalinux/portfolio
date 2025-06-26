@@ -1241,7 +1241,9 @@ const StagePremiereAnnee = React.memo(() => {
                   <EditableImage
                     src={displayData.company_logo}
                     alt="Logo de l'entreprise"
-                    className="h-32 w-full"
+                    className="min-h-[120px] w-full"
+                    maxWidth={300}
+                    maxHeight={200}
                     onSave={(imageUrl) => saveStageData('company_logo', imageUrl)}
                     placeholder="Logo de\nl'entreprise"
                   />
@@ -1251,7 +1253,9 @@ const StagePremiereAnnee = React.memo(() => {
                   <EditableImage
                     src={displayData.workplace_image}
                     alt="Lieu de travail"
-                    className="h-32 w-full"
+                    className="min-h-[120px] w-full"
+                    maxWidth={400}
+                    maxHeight={250}
                     onSave={(imageUrl) => saveStageData('workplace_image', imageUrl)}
                     placeholder="Lieu de\ntravail"
                   />
@@ -1264,13 +1268,15 @@ const StagePremiereAnnee = React.memo(() => {
               <h3 className="text-2xl font-bold text-white mb-6">Outils et technologies utilisés</h3>
               <div>
                 <h4 className="text-lg font-semibold text-cyan-400 mb-4">Technologies principales</h4>
-                <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
+                <div className="grid grid-cols-3 md:grid-cols-6 gap-4 justify-items-center">
                   {[0, 1, 2, 3, 4, 5].map((index) => (
-                    <div key={index} className="space-y-2">
+                    <div key={index} className="space-y-2 flex flex-col items-center">
                       <EditableImage
                         src={displayData.tools?.[index]?.image}
                         alt={displayData.tools?.[index]?.name || `Outil ${index + 1}`}
-                        className="h-16 w-16 mx-auto"
+                        className="min-h-[60px] min-w-[60px]"
+                        maxWidth={80}
+                        maxHeight={80}
                         onSave={(imageUrl) => {
                           const newTools = [...(displayData.tools || [])];
                           if (!newTools[index]) newTools[index] = {};
@@ -1287,7 +1293,7 @@ const StagePremiereAnnee = React.memo(() => {
                           newTools[index].name = value;
                           return saveStageData('tools', newTools);
                         }}
-                        className="text-xs text-gray-300 text-center block"
+                        className="text-xs text-gray-300 text-center block max-w-[80px]"
                         placeholder="Nom de l'outil"
                       />
                     </div>
@@ -1311,7 +1317,9 @@ const StagePremiereAnnee = React.memo(() => {
                     <EditableImage
                       src={displayData.building_plans?.[index]}
                       alt={`Plan ${index + 1}`}
-                      className="h-32 w-full"
+                      className="min-h-[120px] w-full"
+                      maxWidth={350}
+                      maxHeight={250}
                       onSave={(imageUrl) => {
                         const newPlans = [...(displayData.building_plans || [])];
                         newPlans[index] = imageUrl;
