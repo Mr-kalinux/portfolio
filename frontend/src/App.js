@@ -935,9 +935,15 @@ const StagePremiereAnnee = () => {
                   <div className="space-y-6">
                     <div>
                       <h4 className="text-lg font-semibold text-cyan-400 mb-3">Description détaillée</h4>
-                      <p className="text-gray-300 leading-relaxed text-base">
-                        {mission.description}
-                      </p>
+                      <EditableText
+                        value={mission.description}
+                        onSave={async (value) => {
+                          return await saveMission(index, { ...mission, description: value });
+                        }}
+                        className="text-gray-300 leading-relaxed text-base"
+                        placeholder="Description de la mission"
+                        multiline={true}
+                      />
                     </div>
                     
                     {mission.skills && (
