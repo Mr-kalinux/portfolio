@@ -312,7 +312,7 @@ async def get_stage_data(stage_type: str):
                         {"name": "Outil 5", "image": ""},
                         {"name": "Outil 6", "image": ""}
                     ],
-                    "tools_description": "Décrivez ici les outils et technologies que vous avez utilisés durant ce stage, leur utilité et votre niveau de maîtrise.",
+                    "building_plans": ["", "", "", ""],
                     "missions": [
                         {
                             "title": "[Titre de votre mission]",
