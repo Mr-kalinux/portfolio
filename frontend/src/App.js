@@ -986,24 +986,27 @@ const StagePremiereAnnee = () => {
                       </div>
                     )}
                     
-                    {/* Ajout d'une section apprentissages */}
-                    <div className="space-y-3">
-                      <h4 className="text-lg font-semibold text-cyan-400">Apprentissages clés :</h4>
-                      <div className="bg-gray-800/50 rounded-lg p-4">
-                        <ul className="space-y-2">
-                          <li className="flex items-start space-x-2">
-                            <span className="text-cyan-400 font-bold">•</span>
-                            <span className="text-gray-300 text-sm">Découverte des processus métier de l'entreprise</span>
-                          </li>
-                          <li className="flex items-start space-x-2">
-                            <span className="text-cyan-400 font-bold">•</span>
-                            <span className="text-gray-300 text-sm">Maîtrise des outils et technologies utilisés</span>
-                          </li>
-                          <li className="flex items-start space-x-2">
-                            <span className="text-cyan-400 font-bold">•</span>
-                            <span className="text-gray-300 text-sm">Développement de l'autonomie et de la rigueur</span>
-                          </li>
-                        </ul>
+                    {/* Ajout d'une section défis rencontrés */}
+                    <div className="mt-6 bg-gradient-to-r from-orange-500/10 to-red-500/10 border border-orange-500/30 rounded-lg p-4">
+                      <h5 className="text-orange-400 font-semibold mb-2 flex items-center">
+                        <span className="w-2 h-2 bg-orange-400 rounded-full mr-2"></span>
+                        Défis rencontrés
+                      </h5>
+                      <p className="text-gray-300 text-sm">
+                        [Décrivez les principales difficultés rencontrées dans cette mission et comment vous les avez surmontées]
+                      </p>
+                    </div>
+
+                    {/* Ajout d'une section outils utilisés */}
+                    <div className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-cyan-500/30 rounded-lg p-4">
+                      <h5 className="text-cyan-400 font-semibold mb-2 flex items-center">
+                        <span className="w-2 h-2 bg-cyan-400 rounded-full mr-2"></span>
+                        Outils & Technologies
+                      </h5>
+                      <div className="flex flex-wrap gap-1">
+                        <span className="px-2 py-1 bg-blue-500/20 text-blue-400 rounded text-xs">Outil 1</span>
+                        <span className="px-2 py-1 bg-blue-500/20 text-blue-400 rounded text-xs">Outil 2</span>
+                        <span className="px-2 py-1 bg-blue-500/20 text-blue-400 rounded text-xs">Outil 3</span>
                       </div>
                     </div>
                   </div>
