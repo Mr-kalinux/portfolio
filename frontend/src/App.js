@@ -1014,24 +1014,35 @@ const StagePremiereAnnee = React.memo(() => {
     period: "[Date de début - Date de fin]",
     sector: "[Secteur d'activité]",
     description: "[Description de l'entreprise]",
+    company_logo: "",
+    workplace_image: "",
+    tools: [
+      {"name": "Outil 1", "image": ""},
+      {"name": "Outil 2", "image": ""},
+      {"name": "Outil 3", "image": ""},
+      {"name": "Outil 4", "image": ""},
+      {"name": "Outil 5", "image": ""},
+      {"name": "Outil 6", "image": ""}
+    ],
+    tools_description: "Décrivez ici les outils et technologies que vous avez utilisés durant ce stage, leur utilité et votre niveau de maîtrise.",
     missions: [
       {
         title: "[Titre de votre mission]",
         description: "[Description de la mission]",
         skills: ["Compétence 1", "Compétence 2", "Compétence 3"],
-        images: []
+        images: ["", "", ""]
       },
       {
         title: "[Titre de votre mission]",
         description: "[Description de la mission]",
         points: ["Point important 1", "Point important 2", "Point important 3"],
-        images: []
+        images: ["", "", ""]
       },
       {
         title: "[Titre de votre mission]",
         description: "[Description de la mission]",
         skills: ["Compétence avancée 1", "Compétence avancée 2", "Compétence avancée 3"],
-        images: []
+        images: ["", "", ""]
       }
     ],
     skills: ["Compétence technique 1", "Compétence technique 2", "Compétence technique 3"],
