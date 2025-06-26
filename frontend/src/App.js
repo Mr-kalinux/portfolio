@@ -1136,7 +1136,7 @@ const StagePremiereAnnee = React.memo(() => {
                   <EditableImage
                     src={displayData.company_logo}
                     alt="Logo de l'entreprise"
-                    className="h-40 w-full"
+                    className="h-32 w-full"
                     onSave={(imageUrl) => saveStageData('company_logo', imageUrl)}
                     placeholder="Logo de\nl'entreprise"
                   />
@@ -1146,7 +1146,7 @@ const StagePremiereAnnee = React.memo(() => {
                   <EditableImage
                     src={displayData.workplace_image}
                     alt="Lieu de travail"
-                    className="h-40 w-full"
+                    className="h-32 w-full"
                     onSave={(imageUrl) => saveStageData('workplace_image', imageUrl)}
                     placeholder="Lieu de\ntravail"
                   />
@@ -1159,13 +1159,13 @@ const StagePremiereAnnee = React.memo(() => {
               <h3 className="text-2xl font-bold text-white mb-6">Outils et technologies utilisés</h3>
               <div>
                 <h4 className="text-lg font-semibold text-cyan-400 mb-4">Technologies principales</h4>
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
                   {[0, 1, 2, 3, 4, 5].map((index) => (
                     <div key={index} className="space-y-2">
                       <EditableImage
                         src={displayData.tools?.[index]?.image}
                         alt={displayData.tools?.[index]?.name || `Outil ${index + 1}`}
-                        className="h-20 w-20"
+                        className="h-16 w-16 mx-auto"
                         onSave={(imageUrl) => {
                           const newTools = [...(displayData.tools || [])];
                           if (!newTools[index]) newTools[index] = {};
@@ -1194,7 +1194,7 @@ const StagePremiereAnnee = React.memo(() => {
             {/* Section Plans et espaces */}
             <div className="mb-8">
               <h3 className="text-2xl font-bold text-white mb-6">Plans et espaces de travail</h3>
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid md:grid-cols-2 gap-4">
                 {[0, 1, 2, 3].map((index) => (
                   <div key={index} className="space-y-2">
                     <h4 className="text-sm font-medium text-cyan-400">
@@ -1206,7 +1206,7 @@ const StagePremiereAnnee = React.memo(() => {
                     <EditableImage
                       src={displayData.building_plans?.[index]}
                       alt={`Plan ${index + 1}`}
-                      className="h-40 w-full"
+                      className="h-32 w-full"
                       onSave={(imageUrl) => {
                         const newPlans = [...(displayData.building_plans || [])];
                         newPlans[index] = imageUrl;
