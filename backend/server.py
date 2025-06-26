@@ -97,7 +97,7 @@ class StageData(BaseModel):
     company_logo: Optional[str] = None
     workplace_image: Optional[str] = None
     tools: Optional[List[Dict[str, str]]] = None
-    tools_description: Optional[str] = None
+    building_plans: Optional[List[str]] = None
     missions: Optional[List[Mission]] = None
     skills: Optional[List[str]] = None
     achievements: Optional[List[str]] = None
