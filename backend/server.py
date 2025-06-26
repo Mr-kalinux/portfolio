@@ -94,6 +94,10 @@ class StageData(BaseModel):
     period: Optional[str] = None
     sector: Optional[str] = None
     description: Optional[str] = None
+    company_logo: Optional[str] = None
+    workplace_image: Optional[str] = None
+    tools: Optional[List[Dict[str, str]]] = None
+    tools_description: Optional[str] = None
     missions: Optional[List[Mission]] = None
     skills: Optional[List[str]] = None
     achievements: Optional[List[str]] = None
