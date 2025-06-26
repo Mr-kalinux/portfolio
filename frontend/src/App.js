@@ -547,6 +547,7 @@ const AboutPage = () => {
 
 const StagePremiereAnnee = () => {
   const [stageData, setStageData] = useState(null);
+  const { saveData } = useAdmin();
 
   useEffect(() => {
     fetchStageData();
@@ -626,6 +627,20 @@ const StagePremiereAnnee = () => {
         images: []
       });
     }
+  };
+
+  const updateStageData = (newData) => {
+    setStageData(prev => ({ ...prev, ...newData }));
+  };
+
+  const saveMission = async (index, updatedMission) => {
+    const newMissions = [...stageData.missions];
+    newMissions[index] = updatedMission;
+    const success = await saveData('stage1', { ...stageData, missions: newMissions });
+    if (success) {
+      updateStageData({ missions: newMissions });
+    }
+    return success;
   };
 
   if (!stageData) {
