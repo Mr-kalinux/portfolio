@@ -651,6 +651,8 @@ const StagePremiereAnnee = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800">
+      <AdminPanel />
+      
       <div 
         className="h-64 bg-cover bg-center relative"
         style={{
@@ -677,27 +679,71 @@ const StagePremiereAnnee = () => {
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <div className="bg-gray-900/50 border border-gray-600 rounded-lg p-4">
                   <h4 className="text-lg font-semibold text-cyan-400 mb-2">Entreprise</h4>
-                  <p className="text-gray-300">{stageData.company}</p>
+                  <EditableText
+                    value={stageData.company}
+                    onSave={async (value) => {
+                      const success = await saveData('stage1', { ...stageData, company: value });
+                      if (success) updateStageData({ company: value });
+                      return success;
+                    }}
+                    className="text-gray-300"
+                    placeholder="Nom de l'entreprise"
+                  />
                 </div>
                 <div className="bg-gray-900/50 border border-gray-600 rounded-lg p-4">
                   <h4 className="text-lg font-semibold text-cyan-400 mb-2">Période</h4>
-                  <p className="text-gray-300">{stageData.period}</p>
+                  <EditableText
+                    value={stageData.period}
+                    onSave={async (value) => {
+                      const success = await saveData('stage1', { ...stageData, period: value });
+                      if (success) updateStageData({ period: value });
+                      return success;
+                    }}
+                    className="text-gray-300"
+                    placeholder="Date de début - Date de fin"
+                  />
                 </div>
                 <div className="bg-gray-900/50 border border-gray-600 rounded-lg p-4">
                   <h4 className="text-lg font-semibold text-cyan-400 mb-2">Poste</h4>
-                  <p className="text-gray-300">{stageData.position}</p>
+                  <EditableText
+                    value={stageData.position}
+                    onSave={async (value) => {
+                      const success = await saveData('stage1', { ...stageData, position: value });
+                      if (success) updateStageData({ position: value });
+                      return success;
+                    }}
+                    className="text-gray-300"
+                    placeholder="Intitulé du poste"
+                  />
                 </div>
                 <div className="bg-gray-900/50 border border-gray-600 rounded-lg p-4">
                   <h4 className="text-lg font-semibold text-cyan-400 mb-2">Secteur</h4>
-                  <p className="text-gray-300">{stageData.sector}</p>
+                  <EditableText
+                    value={stageData.sector}
+                    onSave={async (value) => {
+                      const success = await saveData('stage1', { ...stageData, sector: value });
+                      if (success) updateStageData({ sector: value });
+                      return success;
+                    }}
+                    className="text-gray-300"
+                    placeholder="Secteur d'activité"
+                  />
                 </div>
               </div>
               
               <div className="bg-gray-900/50 border border-gray-600 rounded-lg p-6">
                 <h4 className="text-xl font-semibold text-cyan-400 mb-4">À propos de l'entreprise</h4>
-                <p className="text-gray-300 leading-relaxed text-lg">
-                  {stageData.description}
-                </p>
+                <EditableText
+                  value={stageData.description}
+                  onSave={async (value) => {
+                    const success = await saveData('stage1', { ...stageData, description: value });
+                    if (success) updateStageData({ description: value });
+                    return success;
+                  }}
+                  className="text-gray-300 leading-relaxed text-lg"
+                  placeholder="Description de l'entreprise"
+                  multiline={true}
+                />
               </div>
             </div>
 
