@@ -1115,6 +1115,83 @@ const StagePremiereAnnee = React.memo(() => {
                 />
               </div>
             </div>
+
+            {/* Section Photos d'entreprise */}
+            <div className="mb-8">
+              <h3 className="text-2xl font-bold text-white mb-6">Environnement de travail</h3>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <h4 className="text-sm font-medium text-cyan-400">Logo/Identité visuelle</h4>
+                  <EditableImage
+                    src={displayData.company_logo}
+                    alt="Logo de l'entreprise"
+                    className="h-40 w-full"
+                    onSave={(imageUrl) => saveStageData('company_logo', imageUrl)}
+                    placeholder="Logo de\nl'entreprise"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <h4 className="text-sm font-medium text-cyan-400">Lieu de travail</h4>
+                  <EditableImage
+                    src={displayData.workplace_image}
+                    alt="Lieu de travail"
+                    className="h-40 w-full"
+                    onSave={(imageUrl) => saveStageData('workplace_image', imageUrl)}
+                    placeholder="Lieu de\ntravail"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Section Outils utilisés */}
+            <div className="mb-8">
+              <h3 className="text-2xl font-bold text-white mb-6">Outils et technologies utilisés</h3>
+              <div className="space-y-6">
+                <div>
+                  <h4 className="text-lg font-semibold text-cyan-400 mb-4">Technologies principales</h4>
+                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    {[0, 1, 2, 3, 4, 5].map((index) => (
+                      <div key={index} className="space-y-2">
+                        <EditableImage
+                          src={displayData.tools?.[index]?.image}
+                          alt={displayData.tools?.[index]?.name || `Outil ${index + 1}`}
+                          className="h-20 w-20"
+                          onSave={(imageUrl) => {
+                            const newTools = [...(displayData.tools || [])];
+                            if (!newTools[index]) newTools[index] = {};
+                            newTools[index].image = imageUrl;
+                            return saveStageData('tools', newTools);
+                          }}
+                          placeholder={`Outil ${index + 1}`}
+                        />
+                        <EditableText
+                          value={displayData.tools?.[index]?.name}
+                          onSave={(value) => {
+                            const newTools = [...(displayData.tools || [])];
+                            if (!newTools[index]) newTools[index] = {};
+                            newTools[index].name = value;
+                            return saveStageData('tools', newTools);
+                          }}
+                          className="text-xs text-gray-300 text-center block"
+                          placeholder="Nom de l'outil"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                <div>
+                  <h4 className="text-lg font-semibold text-cyan-400 mb-3">Description des outils</h4>
+                  <EditableText
+                    value={displayData.tools_description}
+                    onSave={(value) => saveStageData('tools_description', value)}
+                    className="text-gray-300 leading-relaxed"
+                    placeholder="Décrivez les outils et technologies que vous avez utilisés durant ce stage..."
+                    multiline={true}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="bg-gray-800 border border-gray-700 rounded-xl p-8">
