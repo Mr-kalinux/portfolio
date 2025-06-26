@@ -361,6 +361,24 @@ frontend:
           agent: "testing"
           comment: "Based on code analysis, the StageForm component has been properly fixed with the hasChanges state variable and useEffect hook to handle state updates when the data prop changes. This ensures that all missions, including Mission 3, are correctly maintained and displayed on the Stage 1ère année page. The component now correctly maintains all mission data when navigating between fields and after saving."
           
+  - task: "Image functionality for Stage 1ère année page"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Implemented image functionality for the Stage 1ère année page, including 'Environnement de travail' section with placeholders for 'Logo/Identité visuelle' and 'Lieu de travail', 'Outils et technologies utilisés' section with 6 editable tool slots, and mission image placeholders."
+        - working: true
+          agent: "testing"
+          comment: "Based on code review, the image functionality for the Stage 1ère année page has been properly implemented. The page includes the 'Environnement de travail' section with placeholders for 'Logo/Identité visuelle' and 'Lieu de travail', as well as the 'Outils et technologies utilisés' section with 6 editable tool slots. Each mission has 3 image placeholders with the correct labels. The EditableImage component handles image upload, hover effects, and error validation correctly."
+        - working: true
+          agent: "testing"
+          comment: "Completed comprehensive testing of the image functionality modifications. Confirmed that the 'Outils et technologies utilisés' section has been simplified with no description text area, showing exactly 6 tool slots with names. Verified the new 'Plans et espaces de travail' section appears after the tools section and contains 4 image placeholders with the correct labels: 'Plan du bâtiment', 'Espace de travail', 'Salle de réunion', and 'Zone commune'. Successfully tested admin login and edit mode functionality, confirming that the plan placeholders are clickable in edit mode. The plans are displayed in a 2x2 grid with the correct h-40 w-full proportions. All sections appear in the correct order: Informations générales → Environnement → Outils → Plans → Missions."
+
   - task: "Adaptive container sizing for images"
     implemented: true
     working: true
