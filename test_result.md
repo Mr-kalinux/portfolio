@@ -375,6 +375,9 @@ frontend:
         - working: true
           agent: "testing"
           comment: "Based on code review, the image functionality for the Stage 1ère année page has been properly implemented. The page includes the 'Environnement de travail' section with placeholders for 'Logo/Identité visuelle' and 'Lieu de travail', as well as the 'Outils et technologies utilisés' section with 6 editable tool slots. Each mission has 3 image placeholders with the correct labels. The EditableImage component handles image upload, hover effects, and error validation correctly."
+        - working: true
+          agent: "testing"
+          comment: "Completed comprehensive testing of the image functionality modifications. Confirmed that the 'Outils et technologies utilisés' section has been simplified with no description text area, showing exactly 6 tool slots with names. Verified the new 'Plans et espaces de travail' section appears after the tools section and contains 4 image placeholders with the correct labels: 'Plan du bâtiment', 'Espace de travail', 'Salle de réunion', and 'Zone commune'. Successfully tested admin login and edit mode functionality, confirming that the plan placeholders are clickable in edit mode. The plans are displayed in a 2x2 grid with the correct h-40 w-full proportions. All sections appear in the correct order: Informations générales → Environnement → Outils → Plans → Missions."
 
 metadata:
   created_by: "main_agent"
