@@ -918,7 +918,17 @@ const StagePremiereAnnee = () => {
               <div key={index} className="mb-12 bg-gray-900/50 border border-gray-600 rounded-xl p-6">
                 <div className="flex items-center mb-6">
                   <div className="w-3 h-3 bg-cyan-400 rounded-full mr-3"></div>
-                  <h3 className="text-2xl font-bold text-white">Mission {index + 1} - {mission.title}</h3>
+                  <h3 className="text-2xl font-bold text-white">
+                    Mission {index + 1} - 
+                    <EditableText
+                      value={mission.title}
+                      onSave={async (value) => {
+                        return await saveMission(index, { ...mission, title: value });
+                      }}
+                      className="text-white ml-2"
+                      placeholder="Titre de la mission"
+                    />
+                  </h3>
                 </div>
                 
                 <div className="grid md:grid-cols-2 gap-8">
