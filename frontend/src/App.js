@@ -946,14 +946,18 @@ const StagePremiereAnnee = () => {
                       />
                     </div>
                     
-                    {mission.skills && (
+                    {(mission.skills || index === 0 || index === 2) && (
                       <div className="space-y-3">
-                        <h4 className="text-lg font-semibold text-cyan-400">Compétences mobilisées :</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {mission.skills.map((skill, skillIndex) => (
-                            <span key={skillIndex} className="px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded-full text-sm border border-cyan-500/30">{skill}</span>
-                          ))}
-                        </div>
+                        <h4 className="text-lg font-semibold text-cyan-400">
+                          {index === 2 ? 'Compétences avancées :' : 'Compétences mobilisées :'}
+                        </h4>
+                        <EditableList
+                          items={mission.skills}
+                          onSave={async (value) => {
+                            return await saveMission(index, { ...mission, skills: value });
+                          }}
+                          placeholder="Cliquez pour ajouter des compétences"
+                        />
                       </div>
                     )}
                     
