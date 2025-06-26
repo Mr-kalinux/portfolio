@@ -116,81 +116,288 @@ const Toast = ({ message, type, isVisible, onClose }) => {
   );
 };
 
-// Admin context for managing authentication
-const AdminContext = React.createContext();
+// Admin Context for inline editing
+const AdminContext = createContext();
 
-// Admin Auth Provider
 const AdminProvider = ({ children }) => {
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
-  const [adminToken, setAdminToken] = useState(localStorage.getItem('adminToken'));
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editingData, setEditingData] = useState({});
 
-  useEffect(() => {
-    if (adminToken) {
-      verifyAdminToken();
-    }
-  }, [adminToken]);
-
-  const verifyAdminToken = async () => {
+  const checkAuthStatus = async () => {
     try {
-      await axios.get(`${API_URL}/api/admin/verify`, {
-        headers: { Authorization: `Bearer ${adminToken}` }
-      });
-      setIsAdminAuthenticated(true);
+      const response = await axios.get(`${API_URL}/api/admin/verify`);
+      setIsAdminAuthenticated(response.data.authenticated);
     } catch (error) {
-      localStorage.removeItem('adminToken');
-      setAdminToken(null);
       setIsAdminAuthenticated(false);
     }
   };
 
-  const adminLogin = async (password) => {
+  const login = async (password) => {
     try {
       const response = await axios.post(`${API_URL}/api/admin/login`, { password });
-      const token = response.data.token;
-      localStorage.setItem('adminToken', token);
-      setAdminToken(token);
-      setIsAdminAuthenticated(true);
+      if (response.data.success) {
+        setIsAdminAuthenticated(true);
+        return true;
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+    }
+    return false;
+  };
+
+  const logout = async () => {
+    try {
+      await axios.post(`${API_URL}/api/admin/logout`);
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+    setIsAdminAuthenticated(false);
+    setIsEditMode(false);
+  };
+
+  const toggleEditMode = () => {
+    setIsEditMode(!isEditMode);
+  };
+
+  const saveData = async (section, data) => {
+    try {
+      let endpoint;
+      if (section === 'personal') {
+        endpoint = '/api/admin/personal-info';
+      } else if (section.startsWith('stage')) {
+        endpoint = '/api/admin/stages';
+      } else {
+        endpoint = `/api/admin/content/${section}`;
+      }
+
+      await axios.post(`${API_URL}${endpoint}`, { [section]: data });
       return true;
     } catch (error) {
+      console.error('Save error:', error);
       return false;
     }
   };
 
-  const adminLogout = async () => {
-    try {
-      if (adminToken) {
-        await axios.post(`${API_URL}/api/admin/logout`, {}, {
-          headers: { Authorization: `Bearer ${adminToken}` }
-        });
-      }
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
-      localStorage.removeItem('adminToken');
-      setAdminToken(null);
-      setIsAdminAuthenticated(false);
-    }
-  };
+  useEffect(() => {
+    checkAuthStatus();
+  }, []);
 
   return (
     <AdminContext.Provider value={{
       isAdminAuthenticated,
-      adminToken,
-      adminLogin,
-      adminLogout
+      isEditMode,
+      editingData,
+      setEditingData,
+      login,
+      logout,
+      toggleEditMode,
+      saveData
     }}>
       {children}
     </AdminContext.Provider>
   );
 };
 
-// Hook to use admin context
 const useAdmin = () => {
-  const context = React.useContext(AdminContext);
+  const context = useContext(AdminContext);
   if (!context) {
     throw new Error('useAdmin must be used within AdminProvider');
   }
   return context;
+};
+
+// EditableText component for inline editing
+const EditableText = ({ value, onSave, className, placeholder, multiline = false, section, field }) => {
+  const { isEditMode } = useAdmin();
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState(value || '');
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    setEditValue(value || '');
+  }, [value]);
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    const success = await onSave(editValue);
+    if (success) {
+      setIsEditing(false);
+    }
+    setIsSaving(false);
+  };
+
+  const handleCancel = () => {
+    setEditValue(value || '');
+    setIsEditing(false);
+  };
+
+  if (!isEditMode) {
+    return <span className={className}>{value || placeholder}</span>;
+  }
+
+  if (isEditing) {
+    return (
+      <div className="relative">
+        {multiline ? (
+          <textarea
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            className={`${className} bg-gray-800 border border-cyan-400 rounded px-2 py-1 focus:outline-none focus:border-cyan-300`}
+            placeholder={placeholder}
+            rows={4}
+          />
+        ) : (
+          <input
+            type="text"
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            className={`${className} bg-gray-800 border border-cyan-400 rounded px-2 py-1 focus:outline-none focus:border-cyan-300`}
+            placeholder={placeholder}
+          />
+        )}
+        <div className="flex items-center space-x-2 mt-2">
+          <button
+            onClick={handleSave}
+            disabled={isSaving}
+            className="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-500 disabled:opacity-50"
+          >
+            {isSaving ? 'Sauvegarde...' : 'Sauvegarder'}
+          </button>
+          <button
+            onClick={handleCancel}
+            className="px-3 py-1 bg-gray-600 text-white rounded text-sm hover:bg-gray-500"
+          >
+            Annuler
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <span
+      className={`${className} cursor-pointer hover:bg-gray-800 hover:bg-opacity-50 rounded px-1 border-2 border-dashed border-transparent hover:border-cyan-400 transition-colors`}
+      onClick={() => setIsEditing(true)}
+      title="Cliquez pour modifier"
+    >
+      {value || <span className="text-gray-500 italic">{placeholder}</span>}
+    </span>
+  );
+};
+
+// EditableList component for skills, missions, etc.
+const EditableList = ({ items, onSave, className, placeholder, section, field }) => {
+  const { isEditMode } = useAdmin();
+  const [isEditing, setIsEditing] = useState(false);
+  const [editItems, setEditItems] = useState(items || []);
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    setEditItems(items || []);
+  }, [items]);
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    const success = await onSave(editItems);
+    if (success) {
+      setIsEditing(false);
+    }
+    setIsSaving(false);
+  };
+
+  const addItem = () => {
+    setEditItems([...editItems, '']);
+  };
+
+  const removeItem = (index) => {
+    setEditItems(editItems.filter((_, i) => i !== index));
+  };
+
+  const updateItem = (index, value) => {
+    const newItems = [...editItems];
+    newItems[index] = value;
+    setEditItems(newItems);
+  };
+
+  if (!isEditMode) {
+    return (
+      <div className={className}>
+        {items && items.length > 0 ? (
+          items.map((item, index) => (
+            <span key={index} className="px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded-full text-sm border border-cyan-500/30 mr-2 mb-2 inline-block">
+              {item}
+            </span>
+          ))
+        ) : (
+          <span className="text-gray-500 italic">{placeholder}</span>
+        )}
+      </div>
+    );
+  }
+
+  if (isEditing) {
+    return (
+      <div className="space-y-2">
+        {editItems.map((item, index) => (
+          <div key={index} className="flex items-center space-x-2">
+            <input
+              type="text"
+              value={item}
+              onChange={(e) => updateItem(index, e.target.value)}
+              className="flex-1 px-3 py-2 bg-gray-800 border border-cyan-400 rounded text-white focus:outline-none focus:border-cyan-300"
+              placeholder={`Élément ${index + 1}`}
+            />
+            <button
+              onClick={() => removeItem(index)}
+              className="px-2 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-500"
+            >
+              ✕
+            </button>
+          </div>
+        ))}
+        <button
+          onClick={addItem}
+          className="px-3 py-1 bg-cyan-600 text-white rounded text-sm hover:bg-cyan-500"
+        >
+          + Ajouter
+        </button>
+        <div className="flex items-center space-x-2 mt-2">
+          <button
+            onClick={handleSave}
+            disabled={isSaving}
+            className="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-500 disabled:opacity-50"
+          >
+            {isSaving ? 'Sauvegarde...' : 'Sauvegarder'}
+          </button>
+          <button
+            onClick={() => setIsEditing(false)}
+            className="px-3 py-1 bg-gray-600 text-white rounded text-sm hover:bg-gray-500"
+          >
+            Annuler
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className={`${className} cursor-pointer hover:bg-gray-800 hover:bg-opacity-50 rounded px-2 py-1 border-2 border-dashed border-transparent hover:border-cyan-400 transition-colors`}
+      onClick={() => setIsEditing(true)}
+      title="Cliquez pour modifier"
+    >
+      {items && items.length > 0 ? (
+        items.map((item, index) => (
+          <span key={index} className="px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded-full text-sm border border-cyan-500/30 mr-2 mb-2 inline-block">
+            {item}
+          </span>
+        ))
+      ) : (
+        <span className="text-gray-500 italic">{placeholder}</span>
+      )}
+    </div>
+  );
 };
 
 // Components for each page
