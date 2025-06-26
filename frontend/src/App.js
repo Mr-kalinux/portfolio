@@ -2273,18 +2273,10 @@ function App() {
           <Route path="/stage-premiere-annee" element={<StagePremiereAnnee />} />
           <Route path="/stage-deuxieme-annee" element={<StageDeuxiemeAnnee />} />
           <Route path="/conclusion" element={<ConclusionPage />} />
-          <Route path="/admin" element={<AdminRoute />} />
         </Routes>
       </AdminProvider>
     </Router>
   );
 }
-
-// Protected Admin Route
-const AdminRoute = () => {
-  const { isAdminAuthenticated } = useAdmin();
-  
-  return isAdminAuthenticated ? <AdminDashboard /> : <AdminLogin />;
-};
 
 export default App;
