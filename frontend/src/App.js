@@ -1064,53 +1064,31 @@ const StagePremiereAnnee = () => {
             <h2 className="text-3xl font-bold text-cyan-400 mb-6">Bilan du stage</h2>
             <div className="space-y-6">
               <div>
-                <h3 className="text-xl font-semibold text-white mb-4">Synthèse de l'expérience</h3>
-                <p className="text-gray-300 leading-relaxed mb-4">
-                  Ce premier stage m'a permis de découvrir le monde professionnel et de mettre en pratique 
-                  mes connaissances théoriques. J'ai particulièrement apprécié [aspect positif du stage].
-                </p>
-                <p className="text-gray-300 leading-relaxed">
-                  Cette expérience m'a également permis de mieux cerner mes objectifs professionnels 
-                  et de développer des compétences essentielles pour la suite de mon parcours.
-                </p>
+                <h3 className="text-xl font-semibold text-white mb-3">Compétences développées</h3>
+                <EditableList
+                  items={stageData.skills}
+                  onSave={async (value) => {
+                    const success = await saveData('stage1', { ...stageData, skills: value });
+                    if (success) updateStageData({ skills: value });
+                    return success;
+                  }}
+                  placeholder="Cliquez pour ajouter des compétences"
+                />
               </div>
-
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="bg-gray-900/50 border border-gray-600 rounded-lg p-5">
-                  <h4 className="text-lg font-semibold text-cyan-400 mb-3">Apports personnels</h4>
-                  <ul className="space-y-2">
-                    <li className="flex items-start space-x-2">
-                      <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full mt-2"></div>
-                      <span className="text-gray-300 text-sm">Développement de l'autonomie professionnelle</span>
-                    </li>
-                    <li className="flex items-start space-x-2">
-                      <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full mt-2"></div>
-                      <span className="text-gray-300 text-sm">Amélioration des capacités d'adaptation</span>
-                    </li>
-                    <li className="flex items-start space-x-2">
-                      <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full mt-2"></div>
-                      <span className="text-gray-300 text-sm">Renforcement des compétences relationnelles</span>
-                    </li>
-                  </ul>
-                </div>
-
-                <div className="bg-gray-900/50 border border-gray-600 rounded-lg p-5">
-                  <h4 className="text-lg font-semibold text-cyan-400 mb-3">Perspectives d'évolution</h4>
-                  <ul className="space-y-2">
-                    <li className="flex items-start space-x-2">
-                      <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full mt-2"></div>
-                      <span className="text-gray-300 text-sm">Approfondissement des connaissances métier</span>
-                    </li>
-                    <li className="flex items-start space-x-2">
-                      <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full mt-2"></div>
-                      <span className="text-gray-300 text-sm">Élargissement du réseau professionnel</span>
-                    </li>
-                    <li className="flex items-start space-x-2">
-                      <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full mt-2"></div>
-                      <span className="text-gray-300 text-sm">Orientation vers le prochain stage</span>
-                    </li>
-                  </ul>
-                </div>
+              
+              <div>
+                <h3 className="text-xl font-semibold text-white mb-3">Apprentissages clés</h3>
+                <EditableText
+                  value={stageData.learnings || "Ce stage m'a permis de découvrir le monde professionnel et de développer des compétences essentielles. L'expérience acquise durant ces semaines représente une base solide pour la suite de mon parcours."}
+                  onSave={async (value) => {
+                    const success = await saveData('stage1', { ...stageData, learnings: value });
+                    if (success) updateStageData({ learnings: value });
+                    return success;
+                  }}
+                  className="text-gray-300 leading-relaxed"
+                  placeholder="Décrivez vos apprentissages clés"
+                  multiline={true}
+                />
               </div>
             </div>
           </div>
