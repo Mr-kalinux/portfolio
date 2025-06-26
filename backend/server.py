@@ -302,6 +302,17 @@ async def get_stage_data(stage_type: str):
                     "period": "[Date de début - Date de fin]",
                     "sector": "[Secteur d'activité]",
                     "description": "[Description de l'entreprise]",
+                    "company_logo": "",
+                    "workplace_image": "",
+                    "tools": [
+                        {"name": "Outil 1", "image": ""},
+                        {"name": "Outil 2", "image": ""},
+                        {"name": "Outil 3", "image": ""},
+                        {"name": "Outil 4", "image": ""},
+                        {"name": "Outil 5", "image": ""},
+                        {"name": "Outil 6", "image": ""}
+                    ],
+                    "tools_description": "Décrivez ici les outils et technologies que vous avez utilisés durant ce stage, leur utilité et votre niveau de maîtrise.",
                     "missions": [
                         {
                             "title": "[Titre de votre mission]",
