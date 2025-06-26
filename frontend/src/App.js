@@ -961,15 +961,24 @@ const StagePremiereAnnee = () => {
                       </div>
                     )}
                     
-                    {mission.points && (
+                    {mission.points && index === 1 && (
                       <div className="space-y-3">
                         <h4 className="text-lg font-semibold text-cyan-400">Étapes clés de réalisation :</h4>
                         <div className="space-y-3">
                           {mission.points.map((point, pointIndex) => (
                             <div key={pointIndex} className="flex items-start space-x-3 bg-gray-800/50 rounded-lg p-3">
                               <div className="w-2 h-2 bg-cyan-400 rounded-full mt-2 flex-shrink-0"></div>
-                              <div>
-                                <span className="text-gray-300 text-sm leading-relaxed">{point}</span>
+                              <div className="flex-1">
+                                <EditableText
+                                  value={point}
+                                  onSave={async (value) => {
+                                    const newPoints = [...mission.points];
+                                    newPoints[pointIndex] = value;
+                                    return await saveMission(index, { ...mission, points: newPoints });
+                                  }}
+                                  className="text-gray-300 text-sm leading-relaxed"
+                                  placeholder="Point clé"
+                                />
                               </div>
                             </div>
                           ))}
