@@ -1267,19 +1267,22 @@ const StagePremiereAnnee = React.memo(() => {
                   <div className="space-y-4">
                     <h4 className="text-lg font-semibold text-cyan-400">Documentation visuelle :</h4>
                     <div className="grid grid-cols-2 gap-3">
-                      {mission.images && mission.images.slice(0, 3).map((image, imgIndex) => (
-                        <ClickableImage
-                          key={imgIndex}
-                          src={image}
-                          alt={`Mission ${index + 1} - Photo ${imgIndex + 1}`}
-                          className={`rounded-lg h-32 object-cover border border-gray-600 w-full hover:border-cyan-400 transition-colors ${imgIndex === 2 ? 'col-span-2' : ''}`}
-                        />
-                      ))}
-                      {(!mission.images || mission.images.length < 3) && Array.from({length: 3 - (mission.images?.length || 0)}).map((_, imgIndex) => (
-                        <div key={`placeholder-${imgIndex}`} className={`bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg h-32 flex items-center justify-center hover:border-cyan-400 transition-colors ${imgIndex === 2 ? 'col-span-2' : ''}`}>
-                          <span className="text-gray-400 text-xs text-center">
-                            {imgIndex === 0 ? "Capture d'écran\nou schéma" : imgIndex === 1 ? "Résultat\nou livrable" : "Documentation\nou process"}
-                          </span>
+                      {[0, 1, 2].map((imgIndex) => (
+                        <div key={imgIndex} className={`space-y-2 ${imgIndex === 2 ? 'col-span-2' : ''}`}>
+                          <h5 className="text-xs text-cyan-300">
+                            {imgIndex === 0 ? "Capture d'écran/Schéma" : imgIndex === 1 ? "Résultat/Livrable" : "Documentation/Process"}
+                          </h5>
+                          <EditableImage
+                            src={mission.images?.[imgIndex]}
+                            alt={`Mission ${index + 1} - ${imgIndex === 0 ? "Capture d'écran" : imgIndex === 1 ? "Résultat" : "Documentation"}`}
+                            className={`h-32 w-full`}
+                            onSave={(imageUrl) => {
+                              const newImages = [...(mission.images || [])];
+                              newImages[imgIndex] = imageUrl;
+                              return saveMission(index, { ...mission, images: newImages });
+                            }}
+                            placeholder={imgIndex === 0 ? "Capture d'écran\nou schéma" : imgIndex === 1 ? "Résultat\nou livrable" : "Documentation\nou process"}
+                          />
                         </div>
                       ))}
                     </div>
