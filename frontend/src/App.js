@@ -312,7 +312,106 @@ const EditableText = React.memo(({ value, onSave, className, placeholder, multil
   );
 });
 
-// EditableList component for skills, missions, etc.
+// EditableImage component for inline image editing
+const EditableImage = React.memo(({ src, alt, className, onSave, placeholder = "Cliquez pour ajouter une image" }) => {
+  const { isEditMode } = useAdmin();
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const handleImageClick = useCallback(() => {
+    if (isEditMode && fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  }, [isEditMode]);
+
+  const handleFileChange = useCallback(async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Veuillez sélectionner une image valide');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      alert('L\'image ne doit pas dépasser 5MB');
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await axios.post(`${API_URL}/api/admin/upload-image`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (response.data.success) {
+        const success = await onSave(response.data.image_url);
+        if (!success) {
+          alert('Erreur lors de la sauvegarde de l\'image');
+        }
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      alert('Erreur lors de l\'upload de l\'image');
+    } finally {
+      setIsUploading(false);
+    }
+  }, [onSave]);
+
+  if (!isEditMode) {
+    if (!src) {
+      return (
+        <div className={`${className} bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg flex items-center justify-center`}>
+          <span className="text-gray-400 text-xs text-center">{placeholder}</span>
+        </div>
+      );
+    }
+    return <ClickableImage src={src} alt={alt} className={className} />;
+  }
+
+  return (
+    <div className="relative">
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleFileChange}
+        className="hidden"
+      />
+      
+      <div
+        onClick={handleImageClick}
+        className={`${className} cursor-pointer border-2 border-dashed border-transparent hover:border-cyan-400 transition-colors relative overflow-hidden rounded-lg`}
+        title="Cliquez pour changer l'image"
+      >
+        {src ? (
+          <img src={src} alt={alt} className="w-full h-full object-cover" />
+        ) : (
+          <div className="bg-gray-700 w-full h-full flex items-center justify-center">
+            <span className="text-gray-400 text-xs text-center">{placeholder}</span>
+          </div>
+        )}
+        
+        {isUploading && (
+          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div className="text-white text-sm">Upload en cours...</div>
+          </div>
+        )}
+        
+        <div className="absolute inset-0 bg-cyan-500 bg-opacity-0 hover:bg-opacity-20 transition-all duration-200 flex items-center justify-center">
+          <svg className="w-8 h-8 text-white opacity-0 hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+        </div>
+      </div>
+    </div>
+  );
+});
 const EditableList = React.memo(({ items, onSave, className, placeholder }) => {
   const { isEditMode } = useAdmin();
   const [isEditing, setIsEditing] = useState(false);
