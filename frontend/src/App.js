@@ -1309,13 +1309,21 @@ const StagePremiereAnnee = React.memo(() => {
             </div>
             )}
 
-            {/* Section Outils utilisés */}
+            {/* Section Outils utilisés - Only show if at least one tool has an image */}
+            {(hasTools(displayData.tools) || isEditMode) && (
             <div className="mb-8">
               <h3 className="text-2xl font-bold text-white mb-6">Outils et technologies utilisés</h3>
               <div>
                 <h4 className="text-lg font-semibold text-cyan-400 mb-4">Technologies principales</h4>
                 <div className="grid grid-cols-3 md:grid-cols-6 gap-4 justify-items-center">
-                  {[0, 1, 2, 3, 4, 5].map((index) => (
+                  {[0, 1, 2, 3, 4, 5].map((index) => {
+                    const tool = displayData.tools?.[index];
+                    const hasToolContent = tool && (tool.image || tool.name) && (tool.image?.trim() !== '' || tool.name?.trim() !== '');
+                    
+                    // Only show if tool has content or we're in edit mode
+                    if (!hasToolContent && !isEditMode) return null;
+                    
+                    return (
                     <div key={index} className="space-y-2 flex flex-col items-center">
                       <EditableImage
                         src={displayData.tools?.[index]?.image}
@@ -1339,14 +1347,16 @@ const StagePremiereAnnee = React.memo(() => {
                           newTools[index].name = value;
                           return saveStageData('tools', newTools);
                         }}
-                        className="text-xs text-gray-300 text-center block max-w-[80px]"
-                        placeholder="Nom de l'outil"
+                        className="text-white text-sm text-center max-w-[80px]"
+                        placeholder={`Nom outil ${index + 1}`}
                       />
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </div>
+            )}
 
             {/* Section Plans et espaces */}
             <div className="mb-8">
