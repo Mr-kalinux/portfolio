@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Créer un portfolio pour présenter des stages de fin d'années avec une page d'accueil et trois boutons menant vers le stage de première année, le stage de deuxième année et la conclusion. Style moderne et minimaliste avec des couleurs sombres et une couleur flash. Inclure une section 'À propos de moi'."
+user_problem_statement: "Analyser le site et plus particulièrement les images afin de les recadrer et redimensionner pour que le site soit plus lisible et moins encombré. Retirer les cases vides sans images."
 
 backend:
   - task: "Portfolio API with MongoDB integration"
