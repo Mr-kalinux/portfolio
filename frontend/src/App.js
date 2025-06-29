@@ -1311,7 +1311,7 @@ const StagePremiereAnnee = React.memo(() => {
             {(hasTools(displayData.tools) || isEditMode) && (
             <div className="mb-8">
               <h3 className="text-2xl font-bold text-white mb-6">Outils et technologies utilisés</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 justify-items-center max-w-4xl mx-auto">
+              <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto">
                 {[0, 1, 2, 3, 4, 5].map((index) => {
                   const tool = displayData.tools?.[index];
                   const hasToolContent = tool && tool.image && tool.image.trim() !== '';
@@ -1324,9 +1324,10 @@ const StagePremiereAnnee = React.memo(() => {
                     <EditableImage
                       src={displayData.tools?.[index]?.image}
                       alt={`Outil ${index + 1}`}
-                      className="min-h-[80px] min-w-[80px]"
-                      maxWidth={90}
-                      maxHeight={90}
+                      className="w-20 h-20"
+                      maxWidth={80}
+                      maxHeight={80}
+                      aspectRatio={1}
                       onSave={(imageUrl) => {
                         const newTools = [...(displayData.tools || [])];
                         if (!newTools[index]) newTools[index] = {};
