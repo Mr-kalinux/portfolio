@@ -1347,7 +1347,7 @@ const StagePremiereAnnee = React.memo(() => {
                           newTools[index].name = value;
                           return saveStageData('tools', newTools);
                         }}
-                        className="text-white text-sm text-center max-w-[80px]"
+                        className="text-white text-xs text-center max-w-[70px]"
                         placeholder={`Nom outil ${index + 1}`}
                       />
                     </div>
