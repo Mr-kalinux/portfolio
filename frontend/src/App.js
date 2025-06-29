@@ -1445,27 +1445,13 @@ const StagePremiereAnnee = React.memo(() => {
 
           <div className="bg-gray-800 border border-gray-700 rounded-xl p-8">
             <h2 className="text-3xl font-bold text-cyan-400 mb-6">Bilan du stage</h2>
-            <div className="space-y-6">
-              <div>
-                <h3 className="text-xl font-semibold text-white mb-3">Compétences développées</h3>
-                <EditableList
-                  items={displayData.skills}
-                  onSave={(value) => saveStageData('skills', value)}
-                  placeholder="Cliquez pour ajouter des compétences"
-                />
-              </div>
-              
-              <div>
-                <h3 className="text-xl font-semibold text-white mb-3">Apprentissages clés</h3>
-                <EditableText
-                  value={displayData.learnings}
-                  onSave={(value) => saveStageData('learnings', value)}
-                  className="text-gray-300 leading-relaxed"
-                  placeholder="Décrivez vos apprentissages clés"
-                  multiline={true}
-                />
-              </div>
-            </div>
+            <EditableText
+              value={displayData.learnings}
+              onSave={(value) => saveStageData('learnings', value)}
+              className="text-gray-300 leading-relaxed text-lg"
+              placeholder="Rédigez votre bilan de stage global..."
+              multiline={true}
+            />
           </div>
 
           <div className="bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-400/30 rounded-xl p-8 text-center">
