@@ -404,7 +404,7 @@ frontend:
     status_history:
         - working: "NA"
           agent: "main"
-          comment: "Added helper functions to detect empty sections and implemented conditional rendering for image sections. Created hasImages(), hasTools(), and hasMissionImages() functions to determine if sections should be displayed. Updated all image sections to hide when empty (in public view) but remain visible in edit mode. Optimized image dimensions across all sections for better readability and reduced visual clutter. Reduced max dimensions: Logo (250x150), Workplace (300x200), Tools (70x70), Plans (300x200), Mission images (200/400x150)."
+          comment: "Added helper functions to detect empty sections and implemented conditional rendering for image sections. Created hasImages(), hasTools(), and hasMissionImages() functions to determine if sections should be displayed. Updated all image sections to hide when empty (in public view) but remain visible in edit mode. Optimized image dimensions across all sections for better readability and reduced visual clutter. Reduced max dimensions: Logo (250x150), Workplace (300x200), Tools (70x70), Plans (300x200), Mission images (200/400x150). Simplified missions to show only title, description and images - removed skills/competencies sections and image labels for cleaner presentation."
 
 metadata:
   created_by: "main_agent"
