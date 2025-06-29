@@ -935,7 +935,7 @@ const HomePage = React.memo(() => {
   );
 });
 
-// About Page Component
+// About Page Component with optimizations
 const AboutPage = React.memo(() => {
   const { data: personalData } = useDataFetcher(`${API_URL}/api/personal-info`);
   const { saveData } = useAdmin();
