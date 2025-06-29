@@ -1423,7 +1423,7 @@ const StagePremiereAnnee = React.memo(() => {
                 <div className="grid md:grid-cols-2 gap-8">
                   <div className="space-y-6">
                     <div>
-                      <h4 className="text-lg font-semibold text-cyan-400 mb-3">Description détaillée</h4>
+                      <h4 className="text-lg font-semibold text-cyan-400 mb-3">Description</h4>
                       <EditableText
                         value={mission.description}
                         onSave={(value) => saveMission(index, { ...mission, description: value })}
@@ -1432,44 +1432,6 @@ const StagePremiereAnnee = React.memo(() => {
                         multiline={true}
                       />
                     </div>
-                    
-                    {(mission.skills || index === 0 || index === 2) && (
-                      <div className="space-y-3">
-                        <h4 className="text-lg font-semibold text-cyan-400">
-                          {index === 2 ? 'Compétences avancées :' : 'Compétences mobilisées :'}
-                        </h4>
-                        <EditableList
-                          items={mission.skills}
-                          onSave={(value) => saveMission(index, { ...mission, skills: value })}
-                          placeholder="Cliquez pour ajouter des compétences"
-                        />
-                      </div>
-                    )}
-                    
-                    {mission.points && index === 1 && (
-                      <div className="space-y-3">
-                        <h4 className="text-lg font-semibold text-cyan-400">Étapes clés de réalisation :</h4>
-                        <div className="space-y-3">
-                          {mission.points.map((point, pointIndex) => (
-                            <div key={pointIndex} className="flex items-start space-x-3 bg-gray-800/50 rounded-lg p-3">
-                              <div className="w-2 h-2 bg-cyan-400 rounded-full mt-2 flex-shrink-0"></div>
-                              <div className="flex-1">
-                                <EditableText
-                                  value={point}
-                                  onSave={(value) => {
-                                    const newPoints = [...mission.points];
-                                    newPoints[pointIndex] = value;
-                                    return saveMission(index, { ...mission, points: newPoints });
-                                  }}
-                                  className="text-gray-300 text-sm leading-relaxed"
-                                  placeholder="Point clé"
-                                />
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
                   </div>
                   
                   {/* Images de la mission - Only show if mission has images or in edit mode */}
