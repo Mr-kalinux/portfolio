@@ -312,8 +312,8 @@ const EditableText = React.memo(({ value, onSave, className, placeholder, multil
   );
 });
 
-// EditableImage component with adaptive container sizing
-const EditableImage = React.memo(({ src, alt, className, onSave, placeholder = "Cliquez pour ajouter une image", maxWidth = 400, maxHeight = 300 }) => {
+// EditableImage component with adaptive container sizing and better proportions
+const EditableImage = React.memo(({ src, alt, className, onSave, placeholder = "Cliquez pour ajouter une image", maxWidth = 300, maxHeight = 200, aspectRatio = null }) => {
   const { isEditMode } = useAdmin();
   const [isUploading, setIsUploading] = useState(false);
   const [imageDimensions, setImageDimensions] = useState(null);
@@ -321,39 +321,60 @@ const EditableImage = React.memo(({ src, alt, className, onSave, placeholder = "
   const fileInputRef = useRef(null);
 
   const calculateAdaptiveSize = useCallback((imgWidth, imgHeight) => {
-    // Calculate the aspect ratio
-    const aspectRatio = imgWidth / imgHeight;
-    
-    // Determine if it's landscape, portrait, or square
     let newWidth, newHeight;
     
-    if (aspectRatio > 1) {
-      // Landscape - limit by width
-      newWidth = Math.min(imgWidth, maxWidth);
-      newHeight = newWidth / aspectRatio;
+    // If aspectRatio is forced, use it
+    if (aspectRatio) {
+      if (aspectRatio > 1) {
+        // Landscape
+        newWidth = Math.min(imgWidth, maxWidth);
+        newHeight = newWidth / aspectRatio;
+      } else {
+        // Portrait
+        newHeight = Math.min(imgHeight, maxHeight);
+        newWidth = newHeight * aspectRatio;
+      }
     } else {
-      // Portrait or square - limit by height
-      newHeight = Math.min(imgHeight, maxHeight);
-      newWidth = newHeight * aspectRatio;
+      // Use original aspect ratio
+      const originalAspectRatio = imgWidth / imgHeight;
+      
+      if (originalAspectRatio > 1) {
+        // Landscape - limit by width
+        newWidth = Math.min(imgWidth, maxWidth);
+        newHeight = newWidth / originalAspectRatio;
+        if (newHeight > maxHeight) {
+          newHeight = maxHeight;
+          newWidth = newHeight * originalAspectRatio;
+        }
+      } else {
+        // Portrait or square - limit by height
+        newHeight = Math.min(imgHeight, maxHeight);
+        newWidth = newHeight * originalAspectRatio;
+        if (newWidth > maxWidth) {
+          newWidth = maxWidth;
+          newHeight = newWidth / originalAspectRatio;
+        }
+      }
     }
     
-    // Ensure minimum size
-    const minSize = 80;
-    if (newWidth < minSize) {
-      newWidth = minSize;
-      newHeight = minSize / aspectRatio;
-    }
-    if (newHeight < minSize) {
-      newHeight = minSize;
-      newWidth = minSize * aspectRatio;
+    // Ensure minimum size but respect aspect ratio
+    const minSize = 60;
+    if (newWidth < minSize || newHeight < minSize) {
+      if (newWidth < newHeight) {
+        newWidth = minSize;
+        newHeight = aspectRatio ? minSize / aspectRatio : minSize / (imgWidth / imgHeight);
+      } else {
+        newHeight = minSize;
+        newWidth = aspectRatio ? minSize * aspectRatio : minSize * (imgWidth / imgHeight);
+      }
     }
     
     return {
       width: Math.round(newWidth),
       height: Math.round(newHeight),
-      aspectRatio
+      aspectRatio: newWidth / newHeight
     };
-  }, [maxWidth, maxHeight]);
+  }, [maxWidth, maxHeight, aspectRatio]);
 
   const handleImageLoad = useCallback((imageUrl) => {
     const img = new Image();
@@ -362,7 +383,7 @@ const EditableImage = React.memo(({ src, alt, className, onSave, placeholder = "
       setImageDimensions(dimensions);
       
       // Create adaptive className with calculated dimensions
-      const baseClasses = className.replace(/h-\d+|w-\d+|h-full|w-full/g, '').trim();
+      const baseClasses = className.replace(/h-\d+|w-\d+|h-full|w-full|min-h-\[\d+px\]|min-w-\[\d+px\]/g, '').trim();
       setAdaptiveClassName(`${baseClasses}`);
     };
     img.src = imageUrl;
@@ -417,14 +438,13 @@ const EditableImage = React.memo(({ src, alt, className, onSave, placeholder = "
     }
   }, [onSave, handleImageLoad]);
 
+  // Don't render if no image and not in edit mode
+  if (!src && !isEditMode) {
+    return null;
+  }
+
   if (!isEditMode) {
-    if (!src) {
-      return (
-        <div className={`${className} bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg flex items-center justify-center`}>
-          <span className="text-gray-400 text-xs text-center">{placeholder}</span>
-        </div>
-      );
-    }
+    if (!src) return null;
     
     // Use adaptive dimensions for display
     const containerStyle = imageDimensions 
@@ -436,7 +456,7 @@ const EditableImage = React.memo(({ src, alt, className, onSave, placeholder = "
       : {};
     
     return (
-      <div style={containerStyle} className="relative overflow-hidden rounded-lg">
+      <div style={containerStyle} className="relative overflow-hidden rounded-lg shadow-md">
         <ClickableImage src={src} alt={alt} className="w-full h-full object-cover" />
       </div>
     );
@@ -464,13 +484,18 @@ const EditableImage = React.memo(({ src, alt, className, onSave, placeholder = "
       <div
         onClick={handleImageClick}
         className={`${!src ? adaptiveClassName : 'w-full h-full'} cursor-pointer border-2 border-dashed border-transparent hover:border-cyan-400 transition-colors relative overflow-hidden rounded-lg group-hover:shadow-lg`}
-        title="Cliquez pour changer l'image"
+        title="Cliquez pour ajouter une image"
       >
         {src ? (
           <img src={src} alt={alt} className="w-full h-full object-cover" />
         ) : (
-          <div className="bg-gray-700 w-full h-full flex items-center justify-center min-h-[80px] min-w-[80px]">
-            <span className="text-gray-400 text-xs text-center">{placeholder}</span>
+          <div className="bg-gray-700 w-full h-full flex items-center justify-center min-h-[60px] min-w-[60px]">
+            <div className="text-center">
+              <svg className="w-8 h-8 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              <span className="text-gray-400 text-xs text-center block">{placeholder}</span>
+            </div>
           </div>
         )}
         
@@ -511,7 +536,7 @@ const EditableImage = React.memo(({ src, alt, className, onSave, placeholder = "
       
       {src && imageDimensions && isEditMode && (
         <div className="absolute -bottom-6 left-0 text-xs text-gray-400 bg-black bg-opacity-50 px-2 py-1 rounded">
-          {imageDimensions.width}x{imageDimensions.height}px
+          {imageDimensions.width}×{imageDimensions.height}px
         </div>
       )}
     </div>
