@@ -10,6 +10,48 @@ const API_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 axios.defaults.withCredentials = true;
 axios.defaults.headers.common['Content-Type'] = 'application/json';
 
+// Navigation Component
+const NavigationBar = React.memo(() => {
+  return (
+    <nav className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-40">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          <Link to="/" className="text-cyan-400 font-bold text-xl hover:text-cyan-300 transition-colors">
+            Portfolio
+          </Link>
+          
+          <div className="hidden md:flex space-x-8">
+            <Link to="/" className="text-gray-300 hover:text-cyan-400 transition-colors font-medium">
+              Accueil
+            </Link>
+            <Link to="/about" className="text-gray-300 hover:text-cyan-400 transition-colors font-medium">
+              À propos
+            </Link>
+            <Link to="/stage-premiere-annee" className="text-gray-300 hover:text-cyan-400 transition-colors font-medium">
+              Stage 1ère année
+            </Link>
+            <Link to="/stage-deuxieme-annee" className="text-gray-300 hover:text-cyan-400 transition-colors font-medium">
+              Stage 2ème année
+            </Link>
+            <Link to="/conclusion" className="text-gray-300 hover:text-cyan-400 transition-colors font-medium">
+              Conclusion
+            </Link>
+          </div>
+
+          {/* Mobile menu button */}
+          <div className="md:hidden">
+            <button className="text-gray-300 hover:text-cyan-400 transition-colors p-2">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+  );
+});
+
 // Image Modal Component
 const ImageModal = React.memo(({ isOpen, onClose, imageSrc, imageAlt }) => {
   useEffect(() => {
