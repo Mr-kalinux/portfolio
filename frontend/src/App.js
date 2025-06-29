@@ -1278,8 +1278,7 @@ const StagePremiereAnnee = React.memo(() => {
               <h3 className="text-2xl font-bold text-white mb-6">Environnement de travail</h3>
               <div className="grid md:grid-cols-2 gap-6">
                 {(hasImages(displayData.company_logo) || isEditMode) && (
-                <div className="space-y-2">
-                  <h4 className="text-sm font-medium text-cyan-400">Logo/Identité visuelle</h4>
+                <div>
                   <EditableImage
                     src={displayData.company_logo}
                     alt="Logo de l'entreprise"
@@ -1287,13 +1286,12 @@ const StagePremiereAnnee = React.memo(() => {
                     maxWidth={250}
                     maxHeight={150}
                     onSave={(imageUrl) => saveStageData('company_logo', imageUrl)}
-                    placeholder="Logo de\nl'entreprise"
+                    placeholder="Logo"
                   />
                 </div>
                 )}
                 {(hasImages(displayData.workplace_image) || isEditMode) && (
-                <div className="space-y-2">
-                  <h4 className="text-sm font-medium text-cyan-400">Lieu de travail</h4>
+                <div>
                   <EditableImage
                     src={displayData.workplace_image}
                     alt="Lieu de travail"
@@ -1301,7 +1299,7 @@ const StagePremiereAnnee = React.memo(() => {
                     maxWidth={300}
                     maxHeight={200}
                     onSave={(imageUrl) => saveStageData('workplace_image', imageUrl)}
-                    placeholder="Lieu de\ntravail"
+                    placeholder="Lieu de travail"
                   />
                 </div>
                 )}
