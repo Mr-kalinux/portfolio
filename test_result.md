@@ -394,6 +394,18 @@ frontend:
           agent: "testing"
           comment: "Conducted a detailed code review of the adaptive container functionality. The EditableImage component (lines 315-519) correctly implements adaptive container sizing based on image aspect ratio. For landscape images, it limits by width; for portrait images, it limits by height. It ensures minimum sizes and maintains responsiveness with maxWidth: '100%'. The size limits are correctly configured: Logo (300x200), Lieu de travail (400x250), Outils (80x80), Plans (350x250), and Mission images (250/500x200). The component also displays dimension badges in edit mode and includes a delete button that resets to default placeholder size. Based on code review, the adaptive container functionality is properly implemented."
 
+  - task: "Improved image layout and empty section hiding"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Added helper functions to detect empty sections and implemented conditional rendering for image sections. Created hasImages(), hasTools(), and hasMissionImages() functions to determine if sections should be displayed. Updated all image sections to hide when empty (in public view) but remain visible in edit mode. Optimized image dimensions across all sections for better readability and reduced visual clutter. Reduced max dimensions: Logo (250x150), Workplace (300x200), Tools (70x70), Plans (300x200), Mission images (200/400x150)."
+
 metadata:
   created_by: "main_agent"
   version: "1.0"
