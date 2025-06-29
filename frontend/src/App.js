@@ -1358,11 +1358,19 @@ const StagePremiereAnnee = React.memo(() => {
             </div>
             )}
 
-            {/* Section Plans et espaces */}
+            {/* Section Plans et espaces - Only show if at least one plan exists */}
+            {(hasImages(displayData.building_plans) || isEditMode) && (
             <div className="mb-8">
               <h3 className="text-2xl font-bold text-white mb-6">Plans et espaces de travail</h3>
               <div className="grid md:grid-cols-2 gap-4">
-                {[0, 1, 2, 3].map((index) => (
+                {[0, 1, 2, 3].map((index) => {
+                  const planImage = displayData.building_plans?.[index];
+                  const hasPlan = planImage && planImage.trim() !== '';
+                  
+                  // Only show if plan exists or we're in edit mode
+                  if (!hasPlan && !isEditMode) return null;
+                  
+                  return (
                   <div key={index} className="space-y-2">
                     <h4 className="text-sm font-medium text-cyan-400">
                       {index === 0 ? "Plan du bâtiment" : 
@@ -1387,9 +1395,11 @@ const StagePremiereAnnee = React.memo(() => {
                                    "Zone\ncommune"}
                     />
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
+            )}
           </div>
 
           <div className="bg-gray-800 border border-gray-700 rounded-xl p-8">
