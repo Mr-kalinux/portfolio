@@ -1297,9 +1297,9 @@ const StagePremiereAnnee = React.memo(() => {
                   <EditableImage
                     src={displayData.workplace_image}
                     alt="Lieu de travail"
-                    className="min-h-[120px] w-full"
-                    maxWidth={400}
-                    maxHeight={250}
+                    className="min-h-[100px] w-full"
+                    maxWidth={300}
+                    maxHeight={200}
                     onSave={(imageUrl) => saveStageData('workplace_image', imageUrl)}
                     placeholder="Lieu de\ntravail"
                   />
