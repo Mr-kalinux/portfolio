@@ -1311,47 +1311,33 @@ const StagePremiereAnnee = React.memo(() => {
             {(hasTools(displayData.tools) || isEditMode) && (
             <div className="mb-8">
               <h3 className="text-2xl font-bold text-white mb-6">Outils et technologies utilisés</h3>
-              <div>
-                <h4 className="text-lg font-semibold text-cyan-400 mb-4">Technologies principales</h4>
-                <div className="grid grid-cols-3 md:grid-cols-6 gap-4 justify-items-center">
-                  {[0, 1, 2, 3, 4, 5].map((index) => {
-                    const tool = displayData.tools?.[index];
-                    const hasToolContent = tool && (tool.image || tool.name) && (tool.image?.trim() !== '' || tool.name?.trim() !== '');
-                    
-                    // Only show if tool has content or we're in edit mode
-                    if (!hasToolContent && !isEditMode) return null;
-                    
-                    return (
-                    <div key={index} className="space-y-2 flex flex-col items-center">
-                      <EditableImage
-                        src={displayData.tools?.[index]?.image}
-                        alt={displayData.tools?.[index]?.name || `Outil ${index + 1}`}
-                        className="min-h-[50px] min-w-[50px]"
-                        maxWidth={70}
-                        maxHeight={70}
-                        onSave={(imageUrl) => {
-                          const newTools = [...(displayData.tools || [])];
-                          if (!newTools[index]) newTools[index] = {};
-                          newTools[index].image = imageUrl;
-                          return saveStageData('tools', newTools);
-                        }}
-                        placeholder={`Outil ${index + 1}`}
-                      />
-                      <EditableText
-                        value={displayData.tools?.[index]?.name}
-                        onSave={(value) => {
-                          const newTools = [...(displayData.tools || [])];
-                          if (!newTools[index]) newTools[index] = {};
-                          newTools[index].name = value;
-                          return saveStageData('tools', newTools);
-                        }}
-                        className="text-white text-xs text-center max-w-[70px]"
-                        placeholder={`Nom outil ${index + 1}`}
-                      />
-                    </div>
-                    );
-                  })}
-                </div>
+              <div className="grid grid-cols-3 md:grid-cols-6 gap-4 justify-items-center">
+                {[0, 1, 2, 3, 4, 5].map((index) => {
+                  const tool = displayData.tools?.[index];
+                  const hasToolContent = tool && tool.image && tool.image.trim() !== '';
+                  
+                  // Only show if tool has image or we're in edit mode
+                  if (!hasToolContent && !isEditMode) return null;
+                  
+                  return (
+                  <div key={index}>
+                    <EditableImage
+                      src={displayData.tools?.[index]?.image}
+                      alt={`Outil ${index + 1}`}
+                      className="min-h-[50px] min-w-[50px]"
+                      maxWidth={70}
+                      maxHeight={70}
+                      onSave={(imageUrl) => {
+                        const newTools = [...(displayData.tools || [])];
+                        if (!newTools[index]) newTools[index] = {};
+                        newTools[index].image = imageUrl;
+                        return saveStageData('tools', newTools);
+                      }}
+                      placeholder={`Outil ${index + 1}`}
+                    />
+                  </div>
+                  );
+                })}
               </div>
             </div>
             )}
