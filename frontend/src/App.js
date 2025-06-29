@@ -1106,7 +1106,7 @@ const AboutPage = React.memo(() => {
 // Stage Premiere Annee Component with optimizations
 const StagePremiereAnnee = React.memo(() => {
   const { data: stageData, loading, refetch } = useDataFetcher(`${API_URL}/api/stages/stage1`);
-  const { saveData } = useAdmin();
+  const { saveData, isEditMode } = useAdmin();
   const [toast, setToast] = useState({ visible: false, message: '', type: 'info' });
 
   const showToast = useCallback((message, type = 'info') => {
