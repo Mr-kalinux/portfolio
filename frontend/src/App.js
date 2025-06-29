@@ -1272,10 +1272,12 @@ const StagePremiereAnnee = React.memo(() => {
               </div>
             </div>
 
-            {/* Section Photos d'entreprise */}
+            {/* Section Photos d'entreprise - Only show if at least one image exists */}
+            {(hasImages(displayData.company_logo) || hasImages(displayData.workplace_image) || isEditMode) && (
             <div className="mb-8">
               <h3 className="text-2xl font-bold text-white mb-6">Environnement de travail</h3>
               <div className="grid md:grid-cols-2 gap-6">
+                {(hasImages(displayData.company_logo) || isEditMode) && (
                 <div className="space-y-2">
                   <h4 className="text-sm font-medium text-cyan-400">Logo/Identité visuelle</h4>
                   <EditableImage
@@ -1288,6 +1290,8 @@ const StagePremiereAnnee = React.memo(() => {
                     placeholder="Logo de\nl'entreprise"
                   />
                 </div>
+                )}
+                {(hasImages(displayData.workplace_image) || isEditMode) && (
                 <div className="space-y-2">
                   <h4 className="text-sm font-medium text-cyan-400">Lieu de travail</h4>
                   <EditableImage
@@ -1300,8 +1304,10 @@ const StagePremiereAnnee = React.memo(() => {
                     placeholder="Lieu de\ntravail"
                   />
                 </div>
+                )}
               </div>
             </div>
+            )}
 
             {/* Section Outils utilisés */}
             <div className="mb-8">
