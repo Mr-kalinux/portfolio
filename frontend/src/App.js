@@ -1472,10 +1472,19 @@ const StagePremiereAnnee = React.memo(() => {
                     )}
                   </div>
                   
+                  {/* Documentation visuelle - Only show if mission has images or in edit mode */}
+                  {(hasMissionImages(mission) || isEditMode) && (
                   <div className="space-y-4">
                     <h4 className="text-lg font-semibold text-cyan-400">Documentation visuelle :</h4>
                     <div className="grid grid-cols-2 gap-3">
-                      {[0, 1, 2].map((imgIndex) => (
+                      {[0, 1, 2].map((imgIndex) => {
+                        const missionImage = mission.images?.[imgIndex];
+                        const hasImage = missionImage && missionImage.trim() !== '';
+                        
+                        // Only show if image exists or we're in edit mode
+                        if (!hasImage && !isEditMode) return null;
+                        
+                        return (
                         <div key={imgIndex} className={`space-y-2 ${imgIndex === 2 ? 'col-span-2' : ''}`}>
                           <h5 className="text-xs text-cyan-300">
                             {imgIndex === 0 ? "Capture d'écran/Schéma" : imgIndex === 1 ? "Résultat/Livrable" : "Documentation/Process"}
@@ -1494,9 +1503,11 @@ const StagePremiereAnnee = React.memo(() => {
                             placeholder={imgIndex === 0 ? "Capture d'écran\nou schéma" : imgIndex === 1 ? "Résultat\nou livrable" : "Documentation\nou process"}
                           />
                         </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
+                  )}
                 </div>
               </div>
             ))}
