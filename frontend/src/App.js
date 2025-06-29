@@ -320,7 +320,7 @@ const hasImages = (images) => {
 
 const hasTools = (tools) => {
   if (!tools || !Array.isArray(tools)) return false;
-  return tools.some(tool => tool && (tool.image && tool.image.trim() !== '' && tool.name && tool.name.trim() !== ''));
+  return tools.some(tool => tool && tool.image && tool.image.trim() !== '');
 };
 
 const hasMissionImages = (mission) => {
