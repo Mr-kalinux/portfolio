@@ -1328,9 +1328,9 @@ const StagePremiereAnnee = React.memo(() => {
                       <EditableImage
                         src={displayData.tools?.[index]?.image}
                         alt={displayData.tools?.[index]?.name || `Outil ${index + 1}`}
-                        className="min-h-[60px] min-w-[60px]"
-                        maxWidth={80}
-                        maxHeight={80}
+                        className="min-h-[50px] min-w-[50px]"
+                        maxWidth={70}
+                        maxHeight={70}
                         onSave={(imageUrl) => {
                           const newTools = [...(displayData.tools || [])];
                           if (!newTools[index]) newTools[index] = {};
