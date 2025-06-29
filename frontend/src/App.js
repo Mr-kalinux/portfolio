@@ -1355,13 +1355,7 @@ const StagePremiereAnnee = React.memo(() => {
                   if (!hasPlan && !isEditMode) return null;
                   
                   return (
-                  <div key={index} className="space-y-2">
-                    <h4 className="text-sm font-medium text-cyan-400">
-                      {index === 0 ? "Plan du bâtiment" : 
-                       index === 1 ? "Espace de travail" : 
-                       index === 2 ? "Salle de réunion" : 
-                       "Zone commune"}
-                    </h4>
+                  <div key={index}>
                     <EditableImage
                       src={displayData.building_plans?.[index]}
                       alt={`Plan ${index + 1}`}
@@ -1373,10 +1367,7 @@ const StagePremiereAnnee = React.memo(() => {
                         newPlans[index] = imageUrl;
                         return saveStageData('building_plans', newPlans);
                       }}
-                      placeholder={index === 0 ? "Plan du\nbâtiment" : 
-                                   index === 1 ? "Espace de\ntravail" : 
-                                   index === 2 ? "Salle de\nréunion" : 
-                                   "Zone\ncommune"}
+                      placeholder={`Plan ${index + 1}`}
                     />
                   </div>
                   );
