@@ -1492,9 +1492,9 @@ const StagePremiereAnnee = React.memo(() => {
                           <EditableImage
                             src={mission.images?.[imgIndex]}
                             alt={`Mission ${index + 1} - ${imgIndex === 0 ? "Capture d'écran" : imgIndex === 1 ? "Résultat" : "Documentation"}`}
-                            className={`min-h-[120px] w-full`}
-                            maxWidth={imgIndex === 2 ? 500 : 250}
-                            maxHeight={200}
+                            className={`min-h-[100px] w-full`}
+                            maxWidth={imgIndex === 2 ? 400 : 200}
+                            maxHeight={150}
                             onSave={(imageUrl) => {
                               const newImages = [...(mission.images || [])];
                               newImages[imgIndex] = imageUrl;
