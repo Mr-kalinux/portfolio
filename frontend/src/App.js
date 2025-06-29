@@ -1381,9 +1381,9 @@ const StagePremiereAnnee = React.memo(() => {
                     <EditableImage
                       src={displayData.building_plans?.[index]}
                       alt={`Plan ${index + 1}`}
-                      className="min-h-[120px] w-full"
-                      maxWidth={350}
-                      maxHeight={250}
+                      className="min-h-[100px] w-full"
+                      maxWidth={300}
+                      maxHeight={200}
                       onSave={(imageUrl) => {
                         const newPlans = [...(displayData.building_plans || [])];
                         newPlans[index] = imageUrl;
