@@ -1283,9 +1283,9 @@ const StagePremiereAnnee = React.memo(() => {
                   <EditableImage
                     src={displayData.company_logo}
                     alt="Logo de l'entreprise"
-                    className="min-h-[120px] w-full"
-                    maxWidth={300}
-                    maxHeight={200}
+                    className="min-h-[100px] w-full"
+                    maxWidth={250}
+                    maxHeight={150}
                     onSave={(imageUrl) => saveStageData('company_logo', imageUrl)}
                     placeholder="Logo de\nl'entreprise"
                   />
