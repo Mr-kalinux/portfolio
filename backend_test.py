@@ -466,7 +466,7 @@ def test_admin_upload_image():
         return False
     
     data = response.json()
-    return "filename" in data and "data" in data and data["data"].startswith("data:image/jpeg;base64,")
+    return "image_url" in data and data["image_url"].startswith("data:image/jpeg;base64,")
 
 def test_admin_logout():
     """Test admin logout"""
