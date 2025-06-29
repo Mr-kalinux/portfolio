@@ -1396,17 +1396,14 @@ const StagePremiereAnnee = React.memo(() => {
                 </div>
                 
                 <div className="grid md:grid-cols-2 gap-8">
-                  <div className="space-y-6">
-                    <div>
-                      <h4 className="text-lg font-semibold text-cyan-400 mb-3">Description</h4>
-                      <EditableText
-                        value={mission.description}
-                        onSave={(value) => saveMission(index, { ...mission, description: value })}
-                        className="text-gray-300 leading-relaxed text-base"
-                        placeholder="Description de la mission"
-                        multiline={true}
-                      />
-                    </div>
+                  <div>
+                    <EditableText
+                      value={mission.description}
+                      onSave={(value) => saveMission(index, { ...mission, description: value })}
+                      className="text-gray-300 leading-relaxed text-base"
+                      placeholder="Description de la mission"
+                      multiline={true}
+                    />
                   </div>
                   
                   {/* Images de la mission - Only show if mission has images or in edit mode */}
