@@ -312,6 +312,21 @@ const EditableText = React.memo(({ value, onSave, className, placeholder, multil
   );
 });
 
+// Helper functions to determine if sections should be shown
+const hasImages = (images) => {
+  if (!images) return false;
+  return Array.isArray(images) ? images.some(img => img && img.trim() !== '') : (images && images.trim() !== '');
+};
+
+const hasTools = (tools) => {
+  if (!tools || !Array.isArray(tools)) return false;
+  return tools.some(tool => tool && (tool.image && tool.image.trim() !== '' && tool.name && tool.name.trim() !== ''));
+};
+
+const hasMissionImages = (mission) => {
+  return mission && mission.images && hasImages(mission.images);
+};
+
 // EditableImage component with adaptive container sizing and better proportions
 const EditableImage = React.memo(({ src, alt, className, onSave, placeholder = "Cliquez pour ajouter une image", maxWidth = 300, maxHeight = 200, aspectRatio = null }) => {
   const { isEditMode } = useAdmin();
