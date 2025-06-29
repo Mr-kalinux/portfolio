@@ -1453,21 +1453,6 @@ const StagePremiereAnnee = React.memo(() => {
               multiline={true}
             />
           </div>
-
-          <div className="bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-400/30 rounded-xl p-8 text-center">
-            <h2 className="text-3xl font-bold text-cyan-400 mb-4">
-              Premier pas vers l'expertise
-            </h2>
-            <p className="text-gray-300 text-lg mb-6">
-              Cette première expérience professionnelle a posé les bases de mon développement en tant que futur expert.
-            </p>
-            <Link to="/about" className="inline-flex items-center px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-lg transition-colors duration-300">
-              Me contacter
-              <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
-            </Link>
-          </div>
         </div>
       </div>
     </div>
