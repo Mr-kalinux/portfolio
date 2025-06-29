@@ -1472,10 +1472,9 @@ const StagePremiereAnnee = React.memo(() => {
                     )}
                   </div>
                   
-                  {/* Documentation visuelle - Only show if mission has images or in edit mode */}
+                  {/* Images de la mission - Only show if mission has images or in edit mode */}
                   {(hasMissionImages(mission) || isEditMode) && (
                   <div className="space-y-4">
-                    <h4 className="text-lg font-semibold text-cyan-400">Documentation visuelle :</h4>
                     <div className="grid grid-cols-2 gap-3">
                       {[0, 1, 2].map((imgIndex) => {
                         const missionImage = mission.images?.[imgIndex];
@@ -1485,13 +1484,10 @@ const StagePremiereAnnee = React.memo(() => {
                         if (!hasImage && !isEditMode) return null;
                         
                         return (
-                        <div key={imgIndex} className={`space-y-2 ${imgIndex === 2 ? 'col-span-2' : ''}`}>
-                          <h5 className="text-xs text-cyan-300">
-                            {imgIndex === 0 ? "Capture d'écran/Schéma" : imgIndex === 1 ? "Résultat/Livrable" : "Documentation/Process"}
-                          </h5>
+                        <div key={imgIndex} className={`${imgIndex === 2 ? 'col-span-2' : ''}`}>
                           <EditableImage
                             src={mission.images?.[imgIndex]}
-                            alt={`Mission ${index + 1} - ${imgIndex === 0 ? "Capture d'écran" : imgIndex === 1 ? "Résultat" : "Documentation"}`}
+                            alt={`Mission ${index + 1} - Image ${imgIndex + 1}`}
                             className={`min-h-[100px] w-full`}
                             maxWidth={imgIndex === 2 ? 400 : 200}
                             maxHeight={150}
@@ -1500,7 +1496,7 @@ const StagePremiereAnnee = React.memo(() => {
                               newImages[imgIndex] = imageUrl;
                               return saveMission(index, { ...mission, images: newImages });
                             }}
-                            placeholder={imgIndex === 0 ? "Capture d'écran\nou schéma" : imgIndex === 1 ? "Résultat\nou livrable" : "Documentation\nou process"}
+                            placeholder={`Image ${imgIndex + 1}`}
                           />
                         </div>
                         );
