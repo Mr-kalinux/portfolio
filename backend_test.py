@@ -8,10 +8,20 @@ import os
 import base64
 from io import BytesIO
 from PIL import Image
+import uuid
 
 # Get the backend URL from the frontend .env file or use the production URL
 def get_backend_url():
-    # Use the production URL from the review request
+    try:
+        # Read from frontend/.env file
+        with open('/app/frontend/.env', 'r') as f:
+            for line in f:
+                if line.startswith('REACT_APP_BACKEND_URL='):
+                    return line.strip().split('=', 1)[1].strip('"\'')
+    except Exception as e:
+        print(f"Warning: Could not read from frontend/.env: {e}")
+    
+    # Fallback to the production URL from the review request
     return "https://2bcb231f-8789-4999-afe6-1c7625920005.preview.emergentagent.com"
 
 # Main API URL
@@ -33,6 +43,90 @@ test_results = {
     "passed": 0,
     "failed": 0,
     "errors": []
+}
+
+# Test data for creating new content
+test_contact = {
+    "name": "Test User",
+    "email": "test@example.com",
+    "message": "This is a test message from the backend test script."
+}
+
+test_stage_data = {
+    "stage1": {
+        "stage_type": "stage1",
+        "company": "CyberXL",
+        "position": "Développeur Web Junior",
+        "period": "Mai 2023 - Août 2023",
+        "sector": "Cybersécurité",
+        "description": "CyberXL est une entreprise spécialisée dans la cybersécurité et le développement de solutions web sécurisées.",
+        "company_logo": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+        "workplace_image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+        "tools": [
+            {"name": "React", "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="},
+            {"name": "Python", "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="},
+            {"name": "MongoDB", "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="},
+            {"name": "FastAPI", "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="},
+            {"name": "Docker", "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="},
+            {"name": "Git", "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="}
+        ],
+        "building_plans": [
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
+        ],
+        "missions": [
+            {
+                "title": "Développement d'une interface d'administration",
+                "description": "Création d'une interface d'administration pour gérer les contenus du site web de l'entreprise.",
+                "skills": ["React", "JavaScript", "CSS"],
+                "images": [
+                    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+                    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+                    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
+                ]
+            },
+            {
+                "title": "Mise en place d'une API REST",
+                "description": "Développement d'une API REST pour la gestion des données du site web.",
+                "points": ["Conception de l'architecture", "Implémentation des endpoints", "Documentation de l'API"],
+                "images": [
+                    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+                    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+                    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
+                ]
+            },
+            {
+                "title": "Intégration de la base de données",
+                "description": "Mise en place d'une base de données MongoDB et intégration avec l'API.",
+                "skills": ["MongoDB", "Mongoose", "NoSQL"],
+                "images": [
+                    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+                    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+                    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
+                ]
+            }
+        ],
+        "skills": ["JavaScript", "React", "Python", "FastAPI", "MongoDB", "Git"],
+        "learnings": "Ce stage m'a permis de développer mes compétences en développement web et de découvrir le monde professionnel de la cybersécurité."
+    }
+}
+
+test_personal_info = {
+    "name": "Jean Dupont",
+    "email": "jean.dupont@example.com",
+    "phone": "+33 6 12 34 56 78",
+    "linkedin": "https://linkedin.com/in/jeandupont",
+    "description": "Développeur web passionné avec une expertise en React et Python.",
+    "skills": ["JavaScript", "React", "Python", "FastAPI", "MongoDB", "Git"],
+    "profile_image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
+}
+
+test_content_data = {
+    "title": "Bilan et perspectives",
+    "content": "Mon parcours professionnel m'a permis d'acquérir de nombreuses compétences et expériences qui m'orientent vers un avenir prometteur dans le développement web.",
+    "goals": ["Devenir expert en développement frontend", "Approfondir mes connaissances en cybersécurité", "Contribuer à des projets open source"]
 }
 
 def run_test(test_name, test_func):
