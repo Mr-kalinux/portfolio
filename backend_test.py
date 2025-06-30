@@ -462,6 +462,7 @@ def test_admin_logout():
 def test_session_persistence():
     """Test session persistence across multiple requests"""
     # Login again to get a fresh session
+    admin_session.cookies.clear()
     login_data = {
         "password": ADMIN_PASSWORD
     }
@@ -471,18 +472,18 @@ def test_session_persistence():
         print("Failed to login for session persistence test")
         return False
     
+    print(f"Session cookie after login: {admin_session.cookies.get_dict()}")
+    
     # Make multiple requests to verify session persists
     verify_responses = []
     for i in range(3):
         response = admin_session.get(f"{API_URL}/admin/verify")
+        print(f"Verify response {i+1}: {response.text}")
         verify_responses.append(response.json().get("authenticated"))
         time.sleep(1)  # Small delay between requests
     
     # All responses should be True
     session_persisted = all(verify_responses)
-    
-    # Logout to clean up
-    admin_session.post(f"{API_URL}/admin/logout")
     
     return session_persisted
 
