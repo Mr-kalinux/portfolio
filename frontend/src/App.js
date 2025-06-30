@@ -4,7 +4,7 @@ import axios from 'axios';
 import './App.css';
 
 // Get backend URL from environment
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+const API_URL = process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL || 'https://ea6e54f3-f0c2-42cd-8caf-0865322008e2.preview.emergentagent.com';
 
 // Configure axios defaults
 axios.defaults.withCredentials = true;
