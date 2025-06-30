@@ -547,18 +547,35 @@ def run_critical_tests():
     # Test basic health check
     run_test("Health Check", test_health_check)
     
-    # Test stage data retrieval (critical routes)
+    # Test data retrieval endpoints
     run_test("Get Stage1 Data", test_get_stage1_data)
     run_test("Get Stage2 Data", test_get_stage2_data)
+    run_test("Get Personal Info", test_get_personal_info)
+    run_test("Get Content Conclusion", test_get_content_conclusion)
+    
+    # Test contact form submission
+    run_test("Submit Contact Form", test_submit_contact_form)
     
     # Test admin authentication flow
-    admin_success = run_test("Admin Login", test_admin_login)
+    admin_login_success = run_test("Admin Login", test_admin_login)
+    run_test("Admin Login (Wrong Password)", test_admin_login_wrong_password)
     
-    if admin_success:
+    if admin_login_success:
+        # Test session management
         run_test("Admin Verify Session", test_admin_verify_session)
+        run_test("Session Persistence", test_session_persistence)
+        
+        # Test content management
         run_test("Admin Get All Content", test_admin_get_all_content)
         run_test("Admin Update Personal Info", test_admin_update_personal_info)
         run_test("Admin Update Stage Info", test_admin_update_stage_info)
+        run_test("Admin Update Content", test_admin_update_content)
+        run_test("Admin Analytics", test_admin_analytics)
+        
+        # Test data persistence
+        run_test("Data Persistence", test_data_persistence)
+        
+        # Test logout
         run_test("Admin Logout", test_admin_logout)
     else:
         print("⚠️ Skipping admin tests because login failed")
