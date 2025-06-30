@@ -420,10 +420,10 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Improved image layout and empty section hiding"
+    - "URGENT: Deployment data visibility and admin authentication issues"
   stuck_tasks: []
   test_all: false
-  test_priority: "high_first"
+  test_priority: "critical_first"
 
 agent_communication:
     - agent: "main"
