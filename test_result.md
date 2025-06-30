@@ -400,7 +400,7 @@ frontend:
     file: "/app/frontend/src/App.js"
     stuck_count: 1
     priority: "critical"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: false
           agent: "main"
