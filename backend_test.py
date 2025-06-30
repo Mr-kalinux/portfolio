@@ -9,29 +9,23 @@ import base64
 from io import BytesIO
 from PIL import Image
 
-# Get the backend URL from the frontend .env file
+# Get the backend URL from the frontend .env file or use the production URL
 def get_backend_url():
-    try:
-        with open('/app/frontend/.env', 'r') as f:
-            for line in f:
-                if line.startswith('REACT_APP_BACKEND_URL='):
-                    return line.strip().split('=')[1].strip('"\'')
-    except Exception as e:
-        print(f"Error reading .env file: {e}")
-        return None
+    # Use the production URL from the review request
+    return "https://ea6e54f3-f0c2-42cd-8caf-0865322008e2.preview.emergentagent.com"
 
 # Main API URL
 BASE_URL = get_backend_url()
 if not BASE_URL:
-    print("Error: Could not find REACT_APP_BACKEND_URL in frontend/.env")
+    print("Error: Could not find backend URL")
     sys.exit(1)
 
 API_URL = f"{BASE_URL}/api"
 print(f"Using API URL: {API_URL}")
 
 # Admin credentials
-ADMIN_PASSWORD = "Sk4t3_b0Ar5"  # From server.py line 33
-admin_token = None
+ADMIN_PASSWORD = "Sk4t3_b0Ar5"  # From server.py line 52
+admin_session = requests.Session()  # Use a session to maintain cookies
 
 # Test results tracking
 test_results = {
