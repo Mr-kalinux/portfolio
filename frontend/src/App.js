@@ -10,7 +10,6 @@ const API_URL = process.env.REACT_APP_BACKEND_URL || import.meta.env?.REACT_APP_
 window.API_URL = API_URL;
 window.axios = axios;
 window.React = React;
-window.ReactDOM = ReactDOM;
 
 // Debug logging for production troubleshooting
 console.log('Environment check:', {
