@@ -12,7 +12,7 @@ from PIL import Image
 # Get the backend URL from the frontend .env file or use the production URL
 def get_backend_url():
     # Use the production URL from the review request
-    return "https://ea6e54f3-f0c2-42cd-8caf-0865322008e2.preview.emergentagent.com"
+    return "https://2bcb231f-8789-4999-afe6-1c7625920005.preview.emergentagent.com"
 
 # Main API URL
 BASE_URL = get_backend_url()

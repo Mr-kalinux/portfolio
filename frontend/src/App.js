@@ -4,7 +4,7 @@ import axios from 'axios';
 import './App.css';
 
 // Get backend URL from environment
-const API_URL = process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL || 'https://ea6e54f3-f0c2-42cd-8caf-0865322008e2.preview.emergentagent.com';
+const API_URL = process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL || 'https://2bcb231f-8789-4999-afe6-1c7625920005.preview.emergentagent.com';
 
 // Debug logging for production troubleshooting
 console.log('Environment check:', {
