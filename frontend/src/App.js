@@ -3,13 +3,20 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import axios from 'axios';
 import './App.css';
 
-// Get backend URL from environment
-const API_URL = process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL || 'https://2bcb231f-8789-4999-afe6-1c7625920005.preview.emergentagent.com';
+// Get backend URL from environment and make it globally available
+const API_URL = process.env.REACT_APP_BACKEND_URL || import.meta.env?.REACT_APP_BACKEND_URL || 'https://2bcb231f-8789-4999-afe6-1c7625920005.preview.emergentagent.com';
+
+// Make API_URL and libraries globally available for production
+window.API_URL = API_URL;
+window.axios = axios;
+window.React = React;
+window.ReactDOM = ReactDOM;
 
 // Debug logging for production troubleshooting
 console.log('Environment check:', {
   'process.env.REACT_APP_BACKEND_URL': process.env.REACT_APP_BACKEND_URL,
   'import.meta.env.REACT_APP_BACKEND_URL': import.meta.env?.REACT_APP_BACKEND_URL,
+  'window.API_URL': window.API_URL,
   'Final API_URL': API_URL
 });
 
