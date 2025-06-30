@@ -194,6 +194,54 @@ def test_get_stage2_data():
     return (data.get("stage_type") == "stage2" and 
             "company" in data)
 
+def test_get_personal_info():
+    """Test retrieving personal info"""
+    response = requests.get(f"{API_URL}/personal-info")
+    print(f"Response status: {response.status_code}")
+    print(f"Response body: {response.text[:500]}...")  # Show truncated response
+    
+    if response.status_code != 200:
+        return False
+    
+    data = response.json()
+    # Verify that the data contains the expected fields
+    return ("name" in data and 
+            "email" in data and 
+            "skills" in data and 
+            isinstance(data["skills"], list))
+
+def test_get_content_conclusion():
+    """Test retrieving conclusion content"""
+    response = requests.get(f"{API_URL}/content/conclusion")
+    print(f"Response status: {response.status_code}")
+    print(f"Response body: {response.text[:500]}...")  # Show truncated response
+    
+    if response.status_code != 200:
+        return False
+    
+    data = response.json()
+    # Verify that the data contains the expected fields
+    return ("section" in data and 
+            "title" in data and 
+            "content" in data and 
+            "goals" in data and 
+            isinstance(data["goals"], list))
+
+def test_submit_contact_form():
+    """Test submitting a contact form"""
+    # Generate a unique message to identify this test submission
+    test_contact["message"] = f"Test message {uuid.uuid4()}"
+    
+    response = requests.post(f"{API_URL}/contact", json=test_contact)
+    print(f"Response status: {response.status_code}")
+    print(f"Response body: {response.text}")
+    
+    if response.status_code != 200:
+        return False
+    
+    data = response.json()
+    return data.get("success") == True and "message" in data
+
 def test_admin_login():
     """Test admin login with correct password"""
     login_data = {
@@ -213,6 +261,28 @@ def test_admin_login():
     has_session_cookie = 'admin_session' in admin_session.cookies.get_dict()
     
     return data.get("success") == True and "message" in data and has_session_cookie
+
+def test_admin_login_wrong_password():
+    """Test admin login with incorrect password"""
+    login_data = {
+        "password": "wrong_password"
+    }
+    
+    # Use a separate session to avoid affecting the main admin session
+    temp_session = requests.Session()
+    response = temp_session.post(f"{API_URL}/admin/login", json=login_data)
+    print(f"Response status: {response.status_code}")
+    print(f"Response body: {response.text}")
+    
+    # Should return 401 Unauthorized
+    if response.status_code != 401:
+        return False
+    
+    data = response.json()
+    # Check that no admin_session cookie was set
+    has_session_cookie = 'admin_session' in temp_session.cookies.get_dict()
+    
+    return "detail" in data and not has_session_cookie
 
 def test_admin_verify_session():
     """Test verifying admin session"""
@@ -250,10 +320,8 @@ def test_admin_update_personal_info():
     
     current_info = response.json()
     
-    # Update with the same data to avoid changing the actual content
-    personal_data = current_info
-    
-    response = admin_session.post(f"{API_URL}/admin/personal-info", json=personal_data)
+    # Update with test data
+    response = admin_session.post(f"{API_URL}/admin/personal-info", json=test_personal_info)
     print(f"Response status: {response.status_code}")
     print(f"Response body: {response.text}")
     
@@ -261,7 +329,22 @@ def test_admin_update_personal_info():
         return False
     
     data = response.json()
-    return data.get("success") == True and "message" in data
+    success = data.get("success") == True and "message" in data
+    
+    # Verify the update by getting the personal info again
+    verify_response = requests.get(f"{API_URL}/personal-info")
+    if verify_response.status_code != 200:
+        print("Failed to verify personal info update")
+        return False
+    
+    verify_data = verify_response.json()
+    data_match = (verify_data.get("name") == test_personal_info["name"] and
+                 verify_data.get("email") == test_personal_info["email"])
+    
+    # Restore the original data
+    restore_response = admin_session.post(f"{API_URL}/admin/personal-info", json=current_info)
+    
+    return success and data_match
 
 def test_admin_update_stage_info():
     """Test updating stage information"""
@@ -271,12 +354,10 @@ def test_admin_update_stage_info():
         print("Failed to get current stage1 data")
         return False
     
-    stage_data = response.json()
+    current_stage_data = response.json()
     
-    # Create the payload in the format expected by the API
-    payload = {"stage1": stage_data}
-    
-    response = admin_session.post(f"{API_URL}/admin/stages", json=payload)
+    # Update with test data
+    response = admin_session.post(f"{API_URL}/admin/stages", json=test_stage_data)
     print(f"Response status: {response.status_code}")
     print(f"Response body: {response.text}")
     
@@ -284,7 +365,73 @@ def test_admin_update_stage_info():
         return False
     
     data = response.json()
-    return data.get("success") == True and "message" in data
+    success = data.get("success") == True and "message" in data
+    
+    # Verify the update by getting the stage1 data again
+    verify_response = requests.get(f"{API_URL}/stages/stage1")
+    if verify_response.status_code != 200:
+        print("Failed to verify stage1 data update")
+        return False
+    
+    verify_data = verify_response.json()
+    data_match = (verify_data.get("company") == test_stage_data["stage1"]["company"] and
+                 verify_data.get("position") == test_stage_data["stage1"]["position"])
+    
+    # Restore the original data
+    restore_data = {"stage1": current_stage_data}
+    restore_response = admin_session.post(f"{API_URL}/admin/stages", json=restore_data)
+    
+    return success and data_match
+
+def test_admin_update_content():
+    """Test updating content section"""
+    # First get the current conclusion content
+    response = admin_session.get(f"{API_URL}/content/conclusion")
+    if response.status_code != 200:
+        print("Failed to get current conclusion content")
+        return False
+    
+    current_content = response.json()
+    
+    # Update with test data
+    response = admin_session.post(f"{API_URL}/admin/content/conclusion", json=test_content_data)
+    print(f"Response status: {response.status_code}")
+    print(f"Response body: {response.text}")
+    
+    if response.status_code != 200:
+        return False
+    
+    data = response.json()
+    success = data.get("success") == True and "message" in data
+    
+    # Verify the update by getting the conclusion content again
+    verify_response = requests.get(f"{API_URL}/content/conclusion")
+    if verify_response.status_code != 200:
+        print("Failed to verify conclusion content update")
+        return False
+    
+    verify_data = verify_response.json()
+    data_match = (verify_data.get("title") == test_content_data["title"] and
+                 verify_data.get("content") == test_content_data["content"])
+    
+    # Restore the original data
+    restore_response = admin_session.post(f"{API_URL}/admin/content/conclusion", json=current_content)
+    
+    return success and data_match
+
+def test_admin_analytics():
+    """Test getting analytics data"""
+    response = admin_session.get(f"{API_URL}/admin/analytics")
+    print(f"Response status: {response.status_code}")
+    print(f"Response body: {response.text}")
+    
+    if response.status_code != 200:
+        return False
+    
+    data = response.json()
+    return ("total_contacts" in data and 
+            "recent_contacts" in data and 
+            "last_updated" in data)
 
 def test_admin_logout():
     """Test admin logout"""
@@ -308,6 +455,88 @@ def test_admin_logout():
             "message" in data and 
             not has_session_cookie and 
             verify_data.get("authenticated") == False)
+
+def test_session_persistence():
+    """Test session persistence across multiple requests"""
+    # Login again to get a fresh session
+    login_data = {
+        "password": ADMIN_PASSWORD
+    }
+    
+    login_response = admin_session.post(f"{API_URL}/admin/login", json=login_data)
+    if login_response.status_code != 200:
+        print("Failed to login for session persistence test")
+        return False
+    
+    # Make multiple requests to verify session persists
+    verify_responses = []
+    for i in range(3):
+        response = admin_session.get(f"{API_URL}/admin/verify")
+        verify_responses.append(response.json().get("authenticated"))
+        time.sleep(1)  # Small delay between requests
+    
+    # All responses should be True
+    session_persisted = all(verify_responses)
+    
+    # Logout to clean up
+    admin_session.post(f"{API_URL}/admin/logout")
+    
+    return session_persisted
+
+def test_data_persistence():
+    """Test data persistence in the database"""
+    # Login to admin session
+    login_data = {
+        "password": ADMIN_PASSWORD
+    }
+    admin_session.post(f"{API_URL}/admin/login", json=login_data)
+    
+    # Create unique test data
+    test_id = str(uuid.uuid4())[:8]
+    test_data = {
+        "stage1": {
+            "stage_type": "stage1",
+            "company": f"Test Company {test_id}",
+            "position": "Test Position",
+            "period": "Test Period",
+            "sector": "Test Sector",
+            "description": "Test Description",
+            "missions": [
+                {
+                    "title": "Test Mission",
+                    "description": "Test Mission Description",
+                    "skills": ["Test Skill 1", "Test Skill 2"]
+                }
+            ]
+        }
+    }
+    
+    # Save the test data
+    save_response = admin_session.post(f"{API_URL}/admin/stages", json=test_data)
+    if save_response.status_code != 200:
+        print("Failed to save test data")
+        return False
+    
+    # Get the data back to verify persistence
+    get_response = requests.get(f"{API_URL}/stages/stage1")
+    if get_response.status_code != 200:
+        print("Failed to retrieve test data")
+        return False
+    
+    retrieved_data = get_response.json()
+    data_persisted = (retrieved_data.get("company") == test_data["stage1"]["company"] and
+                     retrieved_data.get("position") == test_data["stage1"]["position"])
+    
+    # Restore original data
+    original_response = admin_session.get(f"{API_URL}/stages/stage1")
+    if original_response.status_code == 200:
+        original_data = {"stage1": original_response.json()}
+        admin_session.post(f"{API_URL}/admin/stages", json=original_data)
+    
+    # Logout
+    admin_session.post(f"{API_URL}/admin/logout")
+    
+    return data_persisted
 
 def run_critical_tests():
     """Run the critical tests identified in the review request"""
