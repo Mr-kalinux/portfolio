@@ -6,6 +6,13 @@ import './App.css';
 // Get backend URL from environment
 const API_URL = process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL || 'https://ea6e54f3-f0c2-42cd-8caf-0865322008e2.preview.emergentagent.com';
 
+// Debug logging for production troubleshooting
+console.log('Environment check:', {
+  'process.env.REACT_APP_BACKEND_URL': process.env.REACT_APP_BACKEND_URL,
+  'import.meta.env.REACT_APP_BACKEND_URL': import.meta.env?.REACT_APP_BACKEND_URL,
+  'Final API_URL': API_URL
+});
+
 // Configure axios defaults
 axios.defaults.withCredentials = true;
 axios.defaults.headers.common['Content-Type'] = 'application/json';
