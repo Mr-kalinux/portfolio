@@ -433,6 +433,8 @@ test_plan:
 
 agent_communication:
     - agent: "main"
+      message: "USER URGENT REQUEST: Test frontend and backend to fix deployment issues where manually entered data is not visible and admin authentication fails. Previous testing shows backend 100% functional but frontend has environment variable and library scope issues in production build. Need immediate testing and fixes."
+    - agent: "main"
       message: "Implemented complete portfolio website with React frontend and FastAPI backend. Created 5 main pages (Home, About, Stage 1, Stage 2, Conclusion) with modern dark theme and cyan accents. Backend includes comprehensive API for contact forms and content management. Ready for testing - focus on API endpoints first, then frontend navigation and responsiveness."
     - agent: "testing"
       message: "Completed comprehensive testing of all backend API endpoints. Created backend_test.py script that tests all API functionality including health check, contact form submission/retrieval/deletion, portfolio content management, stage information, analytics, and error handling. All backend tests passed successfully with 100% success rate. MongoDB integration is working correctly. The backend is fully functional and ready for frontend integration."
