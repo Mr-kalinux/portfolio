@@ -244,6 +244,9 @@ def test_submit_contact_form():
 
 def test_admin_login():
     """Test admin login with correct password"""
+    # Clear any existing cookies
+    admin_session.cookies.clear()
+    
     login_data = {
         "password": ADMIN_PASSWORD
     }
