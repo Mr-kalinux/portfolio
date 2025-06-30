@@ -414,6 +414,9 @@ frontend:
         - working: false
           agent: "testing"
           comment: "Conducted comprehensive frontend testing on the deployed site. Found that the site is partially working - the UI renders correctly and navigation between pages works. The Stage 1ère année page shows company information (CyberXL) and some content, but not all data is displayed. The admin login form appears but login fails silently. Identified two critical issues: 1) API_URL is not found in the window object, and 2) Axios is not available in the window object. This suggests that the environment variables are not being properly loaded or the API configuration is not being initialized correctly. The frontend is making API requests to /api/stages/stage1 and /api/admin/verify, but the authentication and data handling appear to be failing."
+        - working: false
+          agent: "testing"
+          comment: "Conducted detailed testing of the deployed site. Confirmed that the site is partially working - UI renders correctly and navigation between pages works. The Stage 1ère année page shows company information (CyberXL) and missions content. However, identified critical build issues: 1) API_URL is not defined in the window object, 2) Axios is not available in the global scope, 3) React and ReactDOM are not available in the global scope, 4) Environment variables (REACT_APP_BACKEND_URL) are not accessible. The frontend is making API calls to /api/stages/stage1 and /api/admin/verify, but libraries and environment variables are not properly exposed. This suggests a build configuration issue where the React app is not properly bundling dependencies or environment variables. The site is showing static content but dynamic features like admin login and image uploads are failing because the JavaScript libraries needed for API communication are not properly included in the build."
 
 metadata:
   created_by: "main_agent"
